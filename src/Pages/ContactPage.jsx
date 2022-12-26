@@ -1,5 +1,4 @@
-
-export const FavoritesPages = ({commerce}) => { 
+export const ContactPage = ({commerce}) => { 
 
     return (
         <div>
