@@ -28,8 +28,8 @@ export default function Navbar() {
     const [open, setState] = useState(false);
     const navigate = useNavigate();
     
-    const handleSignInClick = () => navigate('/SignIn');
-    const handleSignOutClick = () => navigate('/SignUp');
+    const handleSignInClick = () => navigate('/sign-in');
+    const handleSignOutClick = () => navigate('/sign-up');
 
     const toggleDrawer = (open) => (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -60,7 +60,7 @@ export default function Navbar() {
                                             <ListItemText primary="Accueil" sx={{color: "#AD0505"}} />
                                         </Link>
                                     </li>
-                                    <li><Link to='/Products'>
+                                    <li><Link to='/products'>
                                             <ListItemText primary="Produits" sx={{color: "#AD0505"}}/>
                                         </Link>
                                     </li>
@@ -73,14 +73,14 @@ export default function Navbar() {
                                                 <ListItemText primary="Favoris" sx={{color: "#AD0505"}}/>
                                         </Link>
                                     </li> */}
-                                    <li><Link to='/Cart'>
+                                    <li><Link to='/cart'>
                                                 <ListItemIcon>
                                                     <ShoppingCartIcon sx={{color: "#AD0505"}}/>
                                                 </ListItemIcon >
                                                 <ListItemText primary="Panier" sx={{color: "#AD0505"}}/>
                                         </Link>
                                     </li>
-                                    <li><Link to='/SignIn'>
+                                    <li><Link to='/sign-in'>
                                                 <ListItemIcon>
                                                     <PersonIcon sx={{color: "#AD0505"}}/>
                                                 </ListItemIcon >
@@ -154,7 +154,7 @@ export default function Navbar() {
                                         </ListItemButton>
                                     </Link> */}
 
-                                    <Link to={"/Cart"}>
+                                    <Link to={"/cart"}>
                                         <ListItemButton>
                                             <ListItemIcon>
                                                 <ShoppingCartIcon sx={{color: "#AD0505"}}/>

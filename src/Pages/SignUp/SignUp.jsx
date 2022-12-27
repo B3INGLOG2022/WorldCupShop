@@ -10,13 +10,13 @@ export const SignUp= () => {
 
         <StyledSignUp className="SignUp">
 
-        <Link to={"/"}>
-            <ArrowBackIosIcon sx={{color: "#AD0505"}}/>
-        </Link>
-        Inscription
-        <Link to={"/Signin"}>
-            <ListItemText primary="Se connecter" sx={{color: "#AD0505"}} />
-        </Link>
+            <Link to={"/"}>
+                <ArrowBackIosIcon sx={{color: "#AD0505"}}/>
+            </Link>
+            Inscription
+            <Link to={"/sign-in"}>
+                <ListItemText primary="Se connecter" sx={{color: "#AD0505"}} />
+            </Link>
         </StyledSignUp>
 
     );

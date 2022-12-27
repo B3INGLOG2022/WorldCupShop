@@ -10,16 +10,17 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Home } from './Pages/Home';
+import { Home } from './Pages/Home/Home';
 import { SignUp } from './Pages/SignUp/SignUp';
 import { SignIn } from './Pages/SignIn/SignIn';
-import { ProductsPage } from './Pages/ProductsPage';
+import { ProductsPage } from './Pages/ProductsList/ProductsPage';
 import { DetailsProductPage } from './Pages/DetailsProduct/DetailsProductPage';
-import { Settings } from './Pages/Settings';
-import { FavoritesPage } from './Pages/FavoritesPage';
-import { CartPage } from './Pages/CartPage';
+import { Settings } from './Pages/Settings/Settings';
+import { FavoritesPage } from './Pages/Favorites/FavoritesPage';
+import { CartPage } from './Pages/Cart/CartPage';
 import { ThanksPage } from './Pages/Thanks/ThanksPage';
-import { ContactPage } from './Pages/ContactPage';
+import { ContactPage } from './Pages/ContactUs/ContactPage';
+import { ErrorPage } from './Pages/Error/ErrorPage';
 
 
 function App() {
@@ -35,15 +36,16 @@ function App() {
           <Container maxWidth = "lg">
             <Routes>
               <Route path="/" element={<Home commerce={commerce}/>} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/signin" element={<SignIn />} />
-              <Route path="/Products" element={<ProductsPage commerce={commerce}/>} />
-              <Route path="/Products/:id" element={<DetailsProductPage commerce={commerce}/>} />
+              <Route path="/sign-up" element={<SignUp />} />
+              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/products" element={<ProductsPage commerce={commerce}/>} />
+              <Route path="/products/:id" element={<DetailsProductPage commerce={commerce}/>} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/favorites" element={<FavoritesPage commerce={commerce}/>} />
-              <Route path="/Cart" element={<CartPage commerce={commerce}/>} />
-              <Route path="/Thanks" element={<ThanksPage commerce={commerce}/>} />
-              <Route path="/contactUs" element={<ContactPage commerce={commerce}/>} />
+              <Route path="/cart" element={<CartPage commerce={commerce}/>} />
+              <Route path="/thanks" element={<ThanksPage commerce={commerce}/>} />
+              <Route path="/contact-us" element={<ContactPage commerce={commerce}/>} />
+              <Route path="/error" element={<ErrorPage />} />
             </Routes>
           </Container>
         </Container>
