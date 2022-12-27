@@ -16,7 +16,7 @@ export const SignIn = () => {
         <ArrowBackIosIcon sx={{color: "#AD0505"}}/>
       </Link>
       Connexion
-      <Link to={"/Signup"}>
+      <Link to={"/sign-up"}>
         <ListItemText primary="S'inscrire" sx={{color: "#AD0505"}} />
       </Link>
     </StyledSignIn>

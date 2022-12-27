@@ -6,6 +6,12 @@ export const StyledNavBar = styled.div`
     .NavBar {
         background-color: #F6F3F0 !important;
         color: #AD0505 !important;
+        margin-bottom: 20px;
+    }
+
+    img{
+        max-width: 130px;
+        height: auto;
     }
     
     #NavBar-Menu, #NavBar-Web-Menu nav{
