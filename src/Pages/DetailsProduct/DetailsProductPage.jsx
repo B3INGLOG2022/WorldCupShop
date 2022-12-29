@@ -31,7 +31,7 @@ export const DetailsProductPage = ({commerce}) => {
 
     const navigate = useNavigate();
     const params = useParams();
-    const dataNotice = [{"username":"toto", "rate":1, "title":"NE L'ACHETEZ SURTOUT PAS","comment":"Il faudrait être fou pour porter un maillot comme celui là (celui de la France est bien mieux","date":"2021-04-03T04:54:56.227415+00:00"},
+    const dataNotice = [{"username":"toto", "rate":1, "title":"NE L'ACHETEZ SURTOUT PAS","comment":"Il faudrait être fou pour porter un maillot comme celui là (celui de la France est bien mieux)","date":"2021-04-03T04:54:56.227415+00:00"},
         {"username":"toto", "rate":2, "title":"bof","comment":"","date":"2019-04-03T04:54:56.227415+00:00"},
         {"username":"toto", "rate":5, "title":"good article","comment":"i buy this article for the world cup and it was a pleasure to wear it","date":"2022-05-03T04:54:56.227415+00:00"}
     ]
