@@ -6,13 +6,15 @@ import Typography from '@mui/material/Typography';
 
 export const FeedBack = ({username,rate,title,comment,date}) => {
 
+    const fbDate = new Date(date);
+
     return (
         <StyledFeedBack>
             <Card>
                 <CardContent >
                     <div className="card-header-notice-component">
                         <Rating value={rate} size="small" readOnly/>
-                        <p>{username} le {date}</p>
+                        <p>{username} le {fbDate.getDay()}/{fbDate.getMonth()}/{fbDate.getFullYear()}</p>
                     </div>
                     <h4>{title}</h4>
                     <Typography>

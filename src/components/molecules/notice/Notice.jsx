@@ -5,14 +5,28 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import { FeedBack } from "../../atoms/Feelback/FeedBack.jsx";
-import { InputNotice } from "../../atoms/InputNotice/InputNotice.jsx";
+import { InputNotice } from "../InputNotice/InputNotice.jsx";
 import Select from '@mui/material/Select';
 
 export const Notice = ({globalRate, NoticesList}) => {
 
-    const [sort, setSort] = useState(0) 
+    const [sort, setSort] = useState(0);
+
+    const sortByTime = () => {
+        NoticesList.sort((a, b) => b.date.localeCompare(a.date))
+    }
+    
+    const sortByRate = () => {
+        NoticesList.sort((a, b) => b.rate - a.rate);
+    }
+
     const handleChangeSort = (event) => {
         setSort(event.target.value);
+        if (event.target.value === 1){
+            sortByTime()
+        } else if (event.target.value === 2) {
+            sortByRate()
+        }
     };
 
     return (
@@ -30,10 +44,11 @@ export const Notice = ({globalRate, NoticesList}) => {
                         value={sort}
                         onChange={handleChangeSort}
                         autoWidth
-                        label="Trie"
+                        label="Trier par"
                     >
-                        <MenuItem value={0}>Avis les plus récents</MenuItem>
-                        <MenuItem value={1}>Les meilleurs notes</MenuItem>
+                        <MenuItem value={0}>Choisir</MenuItem>
+                        <MenuItem value={1}>Avis les plus récents</MenuItem>
+                        <MenuItem value={2}>Les meilleurs notes</MenuItem>
                     </Select>
                 </FormControl>
                 <div className="section-rating-body-list">

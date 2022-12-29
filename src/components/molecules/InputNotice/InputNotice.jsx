@@ -24,7 +24,7 @@ export const InputNotice = ({currentUserValue, currentUserTitle, currentUserComm
                 <CardHeader className="section-header-rating-input" title="Votre avis compte" />
                 <CardContent>
                     <div id="section-user-rating">
-                        <Rating precision={1} size="large" defaultValue={rate} onChange={(event, newValue) => {setRate(newValue);}}/>
+                        <Rating precision={1} size="large" value={rate} onChange={(event, newValue) => {setRate(newValue);}}/>
                     </div>
                     <TextField  
                         className="section-user-title"
