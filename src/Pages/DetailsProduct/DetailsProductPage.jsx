@@ -19,7 +19,7 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Notice } from "../../components/molecules/notice/Notice.jsx";
 import { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Progress } from "../../components/atoms/Progress/Progress.jsx";
 
 export const DetailsProductPage = ({commerce}) => { 
@@ -27,22 +27,23 @@ export const DetailsProductPage = ({commerce}) => {
     const [size, setSize] = useState('')
     const [product, setProduct] = useState({})
     const [isLoading, setIsLoading] = useState(true);
-    const navigate = useNavigate();
     const [globalRate, setGlobalRate] = useState('');
-    const dataNotice = [{"username":"toto", "rate":1, "title":"NE L'ACHETEZ SURTOUT PAS","comment":"Il faudrait être fou pour porter un maillot comme celui là (celui de la France est bien mieux","date":"2022-12-27"},
-        {"username":"toto", "rate":2, "title":"bof","comment":"","date":"2022-12-27"},
-        {"username":"toto", "rate":5, "title":"good article","comment":"i buy this article for the world cup and it was a pleasure to wear it","date":"2022-12-27"}
+
+    const navigate = useNavigate();
+    const params = useParams();
+    const dataNotice = [{"username":"toto", "rate":1, "title":"NE L'ACHETEZ SURTOUT PAS","comment":"Il faudrait être fou pour porter un maillot comme celui là (celui de la France est bien mieux","date":"2021-04-03T04:54:56.227415+00:00"},
+        {"username":"toto", "rate":2, "title":"bof","comment":"","date":"2019-04-03T04:54:56.227415+00:00"},
+        {"username":"toto", "rate":5, "title":"good article","comment":"i buy this article for the world cup and it was a pleasure to wear it","date":"2022-05-03T04:54:56.227415+00:00"}
     ]
+    
     const CalculateGlobalRate = (data) => {
         var addrate = 0;
-        data.map((notice) => {
-            addrate += notice.rate;
-        } )
+        data.map((notice) => addrate += notice.rate)
         return (addrate/data.length).toFixed(1);
     }
 
     const fetchProduct = () => {
-        commerce.products.retrieve("prod_0YnEoqjddN5e7P").then((product) => {
+        commerce.products.retrieve(params?.id).then((product) => {
             setProduct(product);
             setIsLoading(false);
             setGlobalRate(CalculateGlobalRate(dataNotice));

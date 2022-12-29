@@ -5,6 +5,7 @@ export const StyledDetailsProduct = styled.div`
 
     .product-header{
         display: flex;
+        margin-left: 10px;
     }
 
     .product-header a{

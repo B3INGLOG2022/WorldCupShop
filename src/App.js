@@ -32,8 +32,7 @@ function App() {
     <ThemeProvider theme={getTheme()}>
       <BrowserRouter>
         <ToastContainer />
-        <Container maxWidth = {false}>
-          <Container maxWidth = "lg">
+          <Container id="container-root" maxWidth = {false}>
             <Routes>
               <Route path="/" element={<Home commerce={commerce}/>} />
               <Route path="/sign-up" element={<SignUp />} />
@@ -48,7 +47,6 @@ function App() {
               <Route path="/error" element={<ErrorPage />} />
             </Routes>
           </Container>
-        </Container>
         </BrowserRouter>
       </ThemeProvider>
     </>

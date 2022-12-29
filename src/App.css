@@ -42,6 +42,10 @@ a{
   text-decoration: inherit;
 }
 
+#container-root{
+  padding: 0;
+}
+
 header img{
   width: auto;
   height: 100px;
