@@ -7,17 +7,20 @@ import FormControl from '@mui/material/FormControl';
 import { FeedBack } from "../../atoms/Feelback/FeedBack.jsx";
 import { InputNotice } from "../InputNotice/InputNotice.jsx";
 import Select from '@mui/material/Select';
+import { useEffect } from "react";
+import axios from 'axios';
 
 export const Notice = ({globalRate, NoticesList}) => {
 
     const [sort, setSort] = useState(0);
+    const [users, setUsers] = useState([]);
 
     const sortByTime = () => {
-        NoticesList.sort((a, b) => b.date.localeCompare(a.date))
+        NoticesList.sort((a, b) => b.date_updated.localeCompare(a.date_updated))
     }
     
     const sortByRate = () => {
-        NoticesList.sort((a, b) => b.rate - a.rate);
+        NoticesList.sort((a, b) => b.note - a.note);
     }
 
     const handleChangeSort = (event) => {
@@ -28,6 +31,27 @@ export const Notice = ({globalRate, NoticesList}) => {
             sortByRate()
         }
     };
+
+    const fetchUsers = async () => {
+        let usersList = [];
+        await NoticesList.map((notice) => {
+            axios
+            .get('https://api.chec.io/v1/customers/'+notice.id_user, {headers: 'X-Authorization: '+process.env.REACT_APP_COMMERCEJS_SECRET_KEY})
+            .then((res) => {
+                //TODO : faire en sorte d'avoir [id_user] : {'first_name':res.data.firstname, 'last_name':res.data.lastname} et de pouvoir récupéré les valeurs grâce aux index : useerList['cstmr_p6dP5gp0Xkln7k']
+                usersList.push({'id_user':notice.id_user,'first_name':res.data.firstname, 'last_name':res.data.lastname})
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        })
+        console.log(usersList)
+        setUsers(usersList);
+    }
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
 
     return (
         <StyledNotice>
@@ -53,7 +77,10 @@ export const Notice = ({globalRate, NoticesList}) => {
                 </FormControl>
                 <div className="section-rating-body-list">
                     {NoticesList.map((notice,key) => {
-                        return (<FeedBack key={key} username={notice.username} rate={notice.rate} title={notice.title} comment={notice.comment} date={notice.date}/>)
+                        //TODO : A FAIRE 
+                        let index = users.indexOf(notice.id_user)
+                        console.log(index)
+                        return (<FeedBack key={key} username={users[index]?.first_name + ' ' + users[index]?.last_name} rate={notice?.note} title={(notice?.Title || notice?.title)} comment={(notice?.Content || notice?.content)} date={notice.date_updated}/>)
                     })}
                 </div>
             </div>

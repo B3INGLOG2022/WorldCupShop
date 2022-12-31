@@ -9,7 +9,9 @@ export const StyledProduct = styled.div`
     .product-item-card{
         width: 100%;
         height: 100%;
+        cursor: pointer;
     }
+
 
     img{
         display: block;
