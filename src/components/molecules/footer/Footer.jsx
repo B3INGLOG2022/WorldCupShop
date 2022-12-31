@@ -33,7 +33,7 @@ export const Footer = () => {
             </section>
             <section className="footer-info-right">
                 <section className="footer-info__contact">
-                    <Link to={"/contactUs"}>
+                    <Link to={"/contact-us"}>
                         Nous contacter
                     </Link>
                 </section>                    

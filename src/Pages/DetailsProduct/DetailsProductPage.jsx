@@ -11,6 +11,7 @@ import Select from '@mui/material/Select';
 import Button from "@mui/material/Button";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import ReactHtmlParser from 'react-html-parser'
+import axios from 'axios';
 
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -28,40 +29,59 @@ export const DetailsProductPage = ({commerce}) => {
     const [product, setProduct] = useState({})
     const [isLoading, setIsLoading] = useState(true);
     const [globalRate, setGlobalRate] = useState('');
+    const [notices, setNotices] = useState(null);
 
     const navigate = useNavigate();
     const params = useParams();
-    const dataNotice = [{"username":"toto", "rate":1, "title":"NE L'ACHETEZ SURTOUT PAS","comment":"Il faudrait être fou pour porter un maillot comme celui là (celui de la France est bien mieux)","date":"2021-04-03T04:54:56.227415+00:00"},
-        {"username":"toto", "rate":2, "title":"bof","comment":"","date":"2019-04-03T04:54:56.227415+00:00"},
-        {"username":"toto", "rate":5, "title":"good article","comment":"i buy this article for the world cup and it was a pleasure to wear it","date":"2022-05-03T04:54:56.227415+00:00"}
-    ]
-    
-    const CalculateGlobalRate = (data) => {
-        var addrate = 0;
-        data.map((notice) => addrate += notice.rate)
-        return (addrate/data.length).toFixed(1);
+
+    const fetchNotices = async () => {
+        await axios
+            .get(process.env.REACT_APP_DIRECTUS_URL+'/items/notice')
+            .then((res) => {
+                getNoticesById(res.data)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
     }
 
     const fetchProduct = () => {
         commerce.products.retrieve(params?.id).then((product) => {
             setProduct(product);
-            setIsLoading(false);
-            setGlobalRate(CalculateGlobalRate(dataNotice));
+            fetchNotices();
         }).catch((error) => {
             navigate('/error');
         });
     }
-    
+
     useEffect(() => {
         fetchProduct();
     }, []);
 
     const handleChangeSize = (event) => {
         setSize(event.target.value);
-        console.log(event.target.value);
     };
 
-    
+        
+    const CalculateGlobalRate = (data) => {
+        var addrate = 0;
+        data.map((notice) => addrate += notice.note)
+        return (addrate/data.length).toFixed(1);
+    }
+
+    const getNoticesById = (cNotices) => {
+        let noticesCatched = [];
+        let totalRating = 0;
+        cNotices.data.map((notice) => {
+            if (notice.id_product === params?.id) {
+                noticesCatched.push(notice)
+            }
+        })
+        totalRating = CalculateGlobalRate(noticesCatched);
+        setGlobalRate(totalRating);
+        setNotices(noticesCatched)
+        setIsLoading(false);
+    }
 
     return isLoading ? (<Progress />) : (
         <>
@@ -131,7 +151,7 @@ export const DetailsProductPage = ({commerce}) => {
                             <Typography>Avis</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Notice globalRate={globalRate} NoticesList={dataNotice}/>
+                            <Notice globalRate={globalRate} NoticesList={notices}/>
                         </AccordionDetails>
                     </Accordion>
                 </div>
