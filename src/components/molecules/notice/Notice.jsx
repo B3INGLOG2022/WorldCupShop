@@ -9,18 +9,20 @@ import { InputNotice } from "../InputNotice/InputNotice.jsx";
 import Select from '@mui/material/Select';
 import { useEffect } from "react";
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
-export const Notice = ({globalRate, NoticesList}) => {
+export const Notice = ({globalRate, noticesList, ourNotice}) => {
 
     const [sort, setSort] = useState(0);
     const [users, setUsers] = useState([]);
+    const navigate = useNavigate();
 
     const sortByTime = () => {
-        NoticesList.sort((a, b) => b.date_updated.localeCompare(a.date_updated))
+        noticesList.sort((a, b) => b.date_created.localeCompare(a.date_created))
     }
     
     const sortByRate = () => {
-        NoticesList.sort((a, b) => b.note - a.note);
+        noticesList.sort((a, b) => b.note - a.note);
     }
 
     const handleChangeSort = (event) => {
@@ -34,7 +36,7 @@ export const Notice = ({globalRate, NoticesList}) => {
 
     const fetchUsers = async () => {
         let usersList = [];
-        await NoticesList.map((notice) => {
+        await noticesList.map((notice) => {
             axios
             .get('https://api.chec.io/v1/customers/'+notice.id_user, {headers: 'X-Authorization: '+process.env.REACT_APP_COMMERCEJS_SECRET_KEY})
             .then((res) => {
@@ -42,10 +44,9 @@ export const Notice = ({globalRate, NoticesList}) => {
                 usersList.push({'id_user':notice.id_user,'first_name':res.data.firstname, 'last_name':res.data.lastname})
             })
             .catch((err) => {
-                console.log(err)
+                navigate('/error');
             })
         })
-        console.log(usersList)
         setUsers(usersList);
     }
 
@@ -55,10 +56,10 @@ export const Notice = ({globalRate, NoticesList}) => {
 
     return (
         <StyledNotice>
-            <InputNotice />
+            <InputNotice idNotice={ourNotice?.id} currentUserValue={ourNotice?.note} currentUserTitle={ourNotice?.Title} currentUserComment={ourNotice?.Content} />
             <hr className="section-rating-seperator" />
             <div className="section-product-rating-header">
-                <h2>{(NoticesList.length) ? '(' + (NoticesList.length) + ' Avis) : ' + globalRate : '0 Avis'}</h2>
+                <h2>{(noticesList.length) ? '(' + (noticesList.length) + ' Avis) : ' + globalRate : '0 Avis'}</h2>
                 <Rating readOnly precision={0.1} value={Number(globalRate)}/>
             </div>
             <div className="section-rating-body" >
@@ -76,11 +77,10 @@ export const Notice = ({globalRate, NoticesList}) => {
                     </Select>
                 </FormControl>
                 <div className="section-rating-body-list">
-                    {NoticesList.map((notice,key) => {
+                    {noticesList.map((notice,key) => {
                         //TODO : A FAIRE 
                         let index = users.indexOf(notice.id_user)
-                        console.log(index)
-                        return (<FeedBack key={key} username={users[index]?.first_name + ' ' + users[index]?.last_name} rate={notice?.note} title={(notice?.Title || notice?.title)} comment={(notice?.Content || notice?.content)} date={notice.date_updated}/>)
+                        return (<FeedBack key={key} username={users[index]?.first_name + ' ' + users[index]?.last_name} rate={notice?.note} title={(notice?.Title || notice?.title)} comment={(notice?.Content || notice?.content)} date={notice.date_created}/>)
                     })}
                 </div>
             </div>

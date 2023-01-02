@@ -30,6 +30,7 @@ export const DetailsProductPage = ({commerce}) => {
     const [isLoading, setIsLoading] = useState(true);
     const [globalRate, setGlobalRate] = useState('');
     const [notices, setNotices] = useState(null);
+    const [ourNotice, setOurNotices] = useState({});
 
     const navigate = useNavigate();
     const params = useParams();
@@ -49,7 +50,7 @@ export const DetailsProductPage = ({commerce}) => {
         commerce.products.retrieve(params?.id).then((product) => {
             setProduct(product);
             fetchNotices();
-        }).catch((error) => {
+        }).catch(() => {
             navigate('/error');
         });
     }
@@ -71,15 +72,20 @@ export const DetailsProductPage = ({commerce}) => {
 
     const getNoticesById = (cNotices) => {
         let noticesCatched = [];
+        let ourNoticeCatched = {};
         let totalRating = 0;
         cNotices.data.map((notice) => {
             if (notice.id_product === params?.id) {
                 noticesCatched.push(notice)
+                if (notice.id_user === "cstmr_A12JwrBegRwPjn"){ // changer cstmr_A12JwrBegRwPjn avec utilisateur connecté
+                    ourNoticeCatched = notice;
+                }
             }
         })
         totalRating = CalculateGlobalRate(noticesCatched);
         setGlobalRate(totalRating);
         setNotices(noticesCatched)
+        setOurNotices(ourNoticeCatched)
         setIsLoading(false);
     }
 
@@ -151,7 +157,7 @@ export const DetailsProductPage = ({commerce}) => {
                             <Typography>Avis</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Notice globalRate={globalRate} NoticesList={notices}/>
+                            <Notice globalRate={globalRate} noticesList={notices} ourNotice={ourNotice}/>
                         </AccordionDetails>
                     </Accordion>
                 </div>

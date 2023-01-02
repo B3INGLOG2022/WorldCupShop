@@ -59,7 +59,6 @@ export const ProductsPage = ({commerce}) => {
     }
 
     const fetchProducts = async(selectedBrands) => {
-        console.log(selectedBrands);
         await commerce.products.list().then((products) => {
             setProducts(products.data);
             fetchNotices();
@@ -146,7 +145,6 @@ export const ProductsPage = ({commerce}) => {
             }
         })
         totalRating = CalculateGlobalRate(noticesCatched);
-        console.log(nbNotice)
         return [nbNotice, totalRating]
     }
 
