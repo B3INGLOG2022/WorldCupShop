@@ -34,7 +34,7 @@ function App() {
         <ToastContainer />
           <Container id="container-root" maxWidth = {false}>
             <Routes>
-              <Route path="/" element={<Home commerce={commerce}/>} />
+              <Route path="/" element={<ProductsPage commerce={commerce}/>} />
               <Route path="/sign-up" element={<SignUp />} />
               <Route path="/sign-in" element={<SignIn />} />
               <Route path="/products" element={<ProductsPage commerce={commerce}/>} />
