@@ -9,8 +9,7 @@ import CardContent from '@mui/material/CardContent';
 import { useState } from "react";
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, useParams } from "react-router-dom";
 
 export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, currentUserComment}) => {
 
@@ -18,42 +17,65 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
     const [title, setTitle] = useState((currentUserTitle && currentUserTitle) || "")
     const [message, setMessage] = useState((currentUserComment && currentUserComment) || "") //récupérer note de l'utilisateur sur l'article si existant
     const navigate = useNavigate();
-
+    const access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU1MjM4YzgxLTZmNzItNDZjYS05YTcyLTZkMDEyOGMwOWFlZCIsInJvbGUiOiIzOWVmNzFjYy1lNzFmLTQzODEtYWM3Ni0zM2UwNDFhMDY3ZDEiLCJhcHBfYWNjZXNzIjoxLCJhZG1pbl9hY2Nlc3MiOjEsImlhdCI6MTY3Mjc0NTU4OCwiZXhwIjoxNjcyNzQ2NDg4LCJpc3MiOiJkaXJlY3R1cyJ9.3VVBC2u-3qSujd6yoBuQULn16d79e_q0bIyjH74MtTQ"
+    const params = useParams();
+    
     const onSubmitRating = async () => {
-        console.log(rate)
-        console.log(title)
-        console.log(message)
         if ((rate !== currentUserValue)||(title !== currentUserTitle)||(message !== currentUserComment)){
             if (idNotice){
                 await axios
-                    .patch(process.env.REACT_APP_DIRECTUS_URL+'/items/notice/'+idNotice+'?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU1MjM4YzgxLTZmNzItNDZjYS05YTcyLTZkMDEyOGMwOWFlZCIsInJvbGUiOiIzOWVmNzFjYy1lNzFmLTQzODEtYWM3Ni0zM2UwNDFhMDY3ZDEiLCJhcHBfYWNjZXNzIjoxLCJhZG1pbl9hY2Nlc3MiOjEsImlhdCI6MTY3MjY2NzIzNSwiZXhwIjoxNjcyNjY4MTM1LCJpc3MiOiJkaXJlY3R1cyJ9.FO-bRC0PtFa6XJ1p1V80JU9dNovnSVKAbaqKzS55M60',
+                    .patch(process.env.REACT_APP_DIRECTUS_URL+'/items/notice/'+idNotice,
                         JSON.stringify({
-                            Note:{rate},
-                            Title:{title},
-                            Content:{message},
-                        })
+                            note:rate,
+                            Title:title,
+                            Content:message,
+                        }),{ 
+                            "headers": {
+                                "Authorization": "Bearer "+access_token,
+                                "Content-Type": "application/json"
+                            },
+                        }
                     )
-                    .then((res) => {
-                        console.log(res)
+                    .finally(() => {
+                        // toast.success('Merci pour votre avis !', {
+                        //     position: toast.POSITION.BOTTOM_CENTER
+                        // })
+                        navigate('/products/'+params?.id);
                     })
-                    .catch((err) => {
-                        console.log(err)
-                        // navigate('/error');
+                    .catch(() => {
+                        toast.error('Echec de l\'envoie de votre avis !', {
+                            position: toast.POSITION.BOTTOM_CENTER
+                        })
+                        navigate('/error');
                     })
             } else {
-                // await axios
-                //     .post(process.env.REACT_APP_DIRECTUS_URL+'/items/notice',{headers: 'Authorization : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU1MjM4YzgxLTZmNzItNDZjYS05YTcyLTZkMDEyOGMwOWFlZCIsInJvbGUiOiIzOWVmNzFjYy1lNzFmLTQzODEtYWM3Ni0zM2UwNDFhMDY3ZDEiLCJhcHBfYWNjZXNzIjoxLCJhZG1pbl9hY2Nlc3MiOjEsImlhdCI6MTY3MjY1OTQwNywiZXhwIjoxNjcyNjYwMzA3LCJpc3MiOiJkaXJlY3R1cyJ9.-to136BupBMF1dCe6D9Ib6DzkJ2mhAyWfQDdPqOqbN0'}, {data: {
-                //         "note":{rate},
-                //         "Title":{title},
-                //         "Content":{message},
-                //     }})
-                //     .then(() => {
-                //         navigate(0);
-                //     })
-                //     .catch((err) => {
-                //         console.log(err)
-                //         // navigate('/error');
-                //     })
+                await axios
+                    .post(process.env.REACT_APP_DIRECTUS_URL+'/items/notice',
+                    
+                    JSON.stringify({
+                        "id_product": params?.id,
+                        "id_user": "cstmr_A12JwrBegRwPjn",
+                        "note": rate,
+                        "Title": title,
+                        "Content": message
+                    }), {
+                        "headers" : {
+                            "Authorization": "Bearer "+access_token,
+                            "Content-Type": "application/json"
+                        }
+                    },)
+                    .then(() => {
+                        // toast.success('Merci pour votre avis !', {
+                        //     position: toast.POSITION.BOTTOM_CENTER
+                        // })
+                        navigate('/products/'+params?.id);
+                    })
+                    .catch((err) => {
+                        toast.error('Echec de l\'envoie de votre avis !', {
+                            position: toast.POSITION.BOTTOM_CENTER
+                        })
+                        navigate('/error');
+                    })
             }
         } else {
             toast.info('Aucune modification n\'a été apportée', {
