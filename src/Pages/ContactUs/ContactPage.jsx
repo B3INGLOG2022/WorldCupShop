@@ -41,7 +41,7 @@ export const ContactPage = ({}) => {
                     className="section-user-mail"
                     label="Mail"
                     type="email"
-                    name="user_mail"
+                    name="user_email"
                 />
                 <TextField
                     className="section-user-comment"
