@@ -15,23 +15,25 @@ export const ProductsPage = ({commerce}) => {
 
     const [isLoading, setIsLoading] = useState(true);
     const [products, setProducts] = useState([])
+    const [productsFilters, setProductsFilters] = useState([])
     const [dataBrandFormated, setDataBrandFormated]  = useState([]);
+    const [searchBarValue, setSearchBarValue]  = useState('');
+    const [optionsBrandFormated, setOptionsBrandFormated]  = useState([]);
     const [notices, setNotices] = useState(null);
-    // const [brands, setBrands]  = useState([]);
     const [sort, setSort] = useState(0) 
     const navigate = useNavigate();
 
     // sort functions
     const sortByPriceDec = () => {
-        products.sort((a, b) => b.price.raw - a.price.raw);
+        productsFilters.sort((a, b) => b.price.raw - a.price.raw);
     }
     
     const sortByPriceCr = () => {
-        products.sort((a, b) => a.price.raw - b.price.raw);
+        productsFilters.sort((a, b) => a.price.raw - b.price.raw);
     }
 
     const sortByName = () => {
-        products.sort((a, b) => a.name.localeCompare(b.name));
+        productsFilters.sort((a, b) => a.name.localeCompare(b.name));
     }
     
     const handleChangeSort = (event) => {
@@ -54,6 +56,7 @@ export const ProductsPage = ({commerce}) => {
                 setIsLoading(false);
             })
             .catch((err) => {
+                // navigate('/error');
                 console.log(err)
             })
     }
@@ -61,10 +64,11 @@ export const ProductsPage = ({commerce}) => {
     const fetchProducts = async(selectedBrands) => {
         await commerce.products.list().then((products) => {
             setProducts(products.data);
+            setProductsFilters(products.data);
             fetchNotices();
         }).catch((error) => {
-            navigate('/error');
-            // console.log(error)
+            // navigate('/error');
+            console.log(error)
         });
     }
 
@@ -77,55 +81,43 @@ export const ProductsPage = ({commerce}) => {
                 allBrandsFormated.push({ value:i, label: brand.slug})
                 
             });
-            // setBrands(allBrands)
             setDataBrandFormated(allBrandsFormated);
+            setOptionsBrandFormated(allBrandsFormated)
             fetchProducts(allBrands);
         }).catch((error) => {
-            navigate('/error');
-            // console.log(error)
+            // navigate('/error');
+            console.log(error)
         });
     }
-
-    // const fetchProductsByName = (name) => {
-    //     commerce.products.list({query: {name}}).then((products) => {
-    //         setProducts(products.data);
-    //         console.log(products);
-    //     }).catch((error) => {
-    //         // navigate('/error');
-    //         console.log(error)
-    //     });
-    // }
-
-    // const fetchProductsByBrands = (selectedBrands) => {
-    //     console.log(selectedBrands);
-    //     commerce.products.list({
-    //         category_slug: ['nike'],
-    //       }).then(products => {
-    //         setProducts(products.data);
-    //         console.log(products);
-    //     }).catch((error) => {
-    //         // navigate('/error');
-    //         console.log(error)
-    //     });
-    // }
-
-    // const listProductstoShow = () => {
-    //     let allProductsToShow = [];
-    //     products.map((product) => {
-    //         if (brands.includes(product?.categories[0]?.slug)) {
-    //             allProductsToShow.push(product)
-    //         }
-    //     });
-    //     setProductsToShow(allProductsToShow);
-    //     console.log(allProductsToShow)
-    //     if (isLoading2) {
-    //         setIsLoading2(false);
-    //     }
-    // }
 
     useEffect(() => {
         fetchCategories();
     }, []);
+
+    useEffect(() => {
+        if (!isLoading){
+            let SearchProductsList = [];
+            let filteredProductsList = [];
+            // si on supprimer le contenue de la search bar --> afficher l'ensemble des produits
+            if (searchBarValue !== ''||searchBarValue !== undefined||searchBarValue !== null){
+                products.map((product)=>{
+                    if (product.name.toLowerCase().includes(searchBarValue.toLowerCase())){
+                        SearchProductsList.push(product);
+                    }
+                })  
+            } else {
+                SearchProductsList = products;
+            }
+            SearchProductsList.map((product)=>{
+                if (dataBrandFormated.find((e) => e.label===product.categories[0].slug)!==undefined){
+                    filteredProductsList.push(product);
+                }
+            })
+            
+            setSort(0);
+            setProductsFilters(filteredProductsList);
+        }
+    },[dataBrandFormated, searchBarValue])
 
 
     const CalculateGlobalRate = (data) => {
@@ -153,7 +145,7 @@ export const ProductsPage = ({commerce}) => {
             <NavBar />
             <StyledProductsList>
                 <div className='products-list-header'>
-                    <SearchBar options={products}/>
+                    <SearchBar options={products} setSearchBarValue={setSearchBarValue}/>
                     <div className='products-list-header-sort-filtre'>
                         <div className='products-list-header-sort'>
                             <FormControl sx={{ m: 1, minWidth: 80, mt: 2,backgroundColor:"#FFFFFF",}}>
@@ -177,7 +169,8 @@ export const ProductsPage = ({commerce}) => {
                                 defaultValue={dataBrandFormated}
                                 isMulti
                                 name="colors"
-                                options={dataBrandFormated}
+                                onChange={(newBrands)=>setDataBrandFormated(newBrands)}
+                                options={optionsBrandFormated}
                                 className="basic-multi-select"
                                 classNamePrefix="select"
                             />
@@ -185,14 +178,15 @@ export const ProductsPage = ({commerce}) => {
                     </div>
                 </div>
                 <div className='products-list-articles'>
-                    {products.map((product) => {
+                    {(productsFilters.length > 0)?
+                    productsFilters.map((product) => {
                         let current_value_notice = getNoticesById(product.id);
                         return (
                             <div key={product.id} className="products-list-articles-item" onClick={() => navigate('/products/'+ product.id)}>
                                 <Product product={product} rate={Number(current_value_notice[1])} nbFeedBack={current_value_notice[0]} />
                             </div>
                         )
-                    })}
+                    }):<p>Aucun produits ne correspond à vos critères</p>}
                 </div>
             </StyledProductsList>
             <Footer />

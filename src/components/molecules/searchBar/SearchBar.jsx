@@ -2,8 +2,11 @@ import {StyledSearchBar} from './style.js';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import SearchIcon from '@mui/icons-material/Search';
+import { useState } from 'react';
 
-export const SearchBar = ({options}) => {
+export const SearchBar = ({options, setSearchBarValue}) => {
+
+    const [searchValue, setSearchValue] = useState()
 
     return (
 
@@ -12,6 +15,7 @@ export const SearchBar = ({options}) => {
                 <Autocomplete
                     freeSolo
                     disableClearable
+                    onInputChange={(e,v)=>setSearchValue(v)}
                     options={options.map((product) => product.name)}
                     renderInput={(params) => (
                         <TextField
@@ -27,7 +31,9 @@ export const SearchBar = ({options}) => {
                 />
             </div>
             <div className='searchBtn-productList'>
-                <SearchIcon/>
+                <SearchIcon onClick={()=>{
+                    console.log(searchValue);
+                    setSearchBarValue(searchValue)}}/>
             </div>
         </StyledSearchBar>
     )
