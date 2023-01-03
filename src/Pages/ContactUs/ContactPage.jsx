@@ -10,6 +10,9 @@ import CardContent from '@mui/material/CardContent';
 import Button from "@mui/material/Button";
 import {  toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
+import NavBar from '../../components/molecules/navBar/NavBar.jsx';
+
+
 
 
 
@@ -32,9 +35,11 @@ export const ContactPage = ({}) => {
     const handleSendMail = () => navigate("/");
 
     return (
+        <>
+        <NavBar />
         <StyledContactUs>
         <Link to={"/"}>
-            <ArrowBackIosIcon sx={{color: "#AD0505"}}/>
+                    
         </Link> 
         <Card id="section-product-rating-input">
             <CardHeader className="section-header" title="Contactez-nous" />
@@ -42,7 +47,7 @@ export const ContactPage = ({}) => {
             <form ref={form} onSubmit={sendEmail}>
             <TextField  
                     className="section-user-name"
-                    label="Nom"
+                    label="Nom et Prénom"
                     type="text"
                     name="user_name"
                     required="required"
@@ -72,5 +77,6 @@ export const ContactPage = ({}) => {
         </Card>
    
     </StyledContactUs>
+    </>
     )
 }
