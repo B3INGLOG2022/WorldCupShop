@@ -43,7 +43,7 @@ function App() {
               <Route path="/favorites" element={<FavoritesPage commerce={commerce}/>} />
               <Route path="/cart" element={<CartPage commerce={commerce}/>} />
               <Route path="/thanks" element={<ThanksPage commerce={commerce}/>} />
-              <Route path="/contactUs" element={<ContactPage commerce={commerce}/>} />
+              <Route path="/contact-us" element={<ContactPage commerce={commerce}/>} />
               <Route path="/error" element={<ErrorPage />} />
             </Routes>
           </Container>
