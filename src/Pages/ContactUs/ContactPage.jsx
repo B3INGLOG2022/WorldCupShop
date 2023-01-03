@@ -8,6 +8,10 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import Button from "@mui/material/Button";
+import {  toast } from 'react-toastify';
+import { useNavigate } from "react-router-dom";
+
+
 
 
 export const ContactPage = ({}) => { 
@@ -15,12 +19,17 @@ export const ContactPage = ({}) => {
 
     
     const form = useRef(); 
-    const sendEmail = (e) => { 
-        e.preventDefault(); emailjs .sendForm(process.env.REACT_APP_SERVICE_ID,process.env.REACT_APP_TEMPLATE_ID, 
-            form.current,process.env.REACT_APP_PUBLIC_KEY ) .then(
-                 (result) => { alert('Votre message a bien été envoyé...'); console.log(result.text); },
-                  (error) => { console.log(error.text); } ); };
+    const navigate = useNavigate();
 
+    const sendEmail = (e) => { 
+        e.preventDefault(); 
+        emailjs 
+        .sendForm(process.env.REACT_APP_SERVICE_ID,process.env.REACT_APP_TEMPLATE_ID,form.current,process.env.REACT_APP_PUBLIC_KEY ) 
+        .then(
+                (result) => { toast.success('Mail envoyé', {position: toast.POSITION.BOTTOM_CENTER}); console.log(result.text); handleSendMail() },
+                (error) => { console.log(error.text); } ); };
+
+    const handleSendMail = () => navigate("/");
 
     return (
         <StyledContactUs>
@@ -36,12 +45,14 @@ export const ContactPage = ({}) => {
                     label="Nom"
                     type="text"
                     name="user_name"
+                    required="required"
                 />
                 <TextField  
                     className="section-user-mail"
                     label="Mail"
                     type="email"
                     name="user_email"
+                    required="required"
                 />
                 <TextField
                     className="section-user-comment"
@@ -49,10 +60,11 @@ export const ContactPage = ({}) => {
                     placeholder="Ecrivez votre commentaire"
                     type="text"
                     name="message"
+                    required="required"
                     multiline
                 />
 
-                <Button  type="submit"  >
+                <Button  color="inherit" type="submit"  >
                         Envoyer
                 </Button>
                 </form>
