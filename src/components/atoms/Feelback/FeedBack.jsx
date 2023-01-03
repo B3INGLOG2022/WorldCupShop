@@ -14,7 +14,7 @@ export const FeedBack = ({username,rate,title,comment,date}) => {
                 <CardContent >
                     <div className="card-header-notice-component">
                         <Rating value={rate} size="small" readOnly/>
-                        <p>{username} le {fbDate.getDay()}/{fbDate.getMonth()}/{fbDate.getFullYear()}</p>
+                        <p>{username} le {fbDate.getDate()}/{fbDate.getMonth()+1}/{fbDate.getFullYear()}</p>
                     </div>
                     <h4>{title}</h4>
                     <Typography>
