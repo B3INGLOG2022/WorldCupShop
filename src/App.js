@@ -21,14 +21,14 @@ import { CartPage } from './Pages/Cart/CartPage';
 import { ThanksPage } from './Pages/Thanks/ThanksPage';
 import { ContactPage } from './Pages/ContactUs/ContactPage';
 import { ErrorPage } from './Pages/Error/ErrorPage';
-
-
+import { Provider } from 'react-redux';
+import {store} from './store/index'
 function App() {
 
   const commerce = new Commerce(process.env.REACT_APP_COMMERCEJS_PUBLIC_KEY, true);
 
   return (
-    <>
+    <Provider store={store}>
     <ThemeProvider theme={getTheme()}>
       <BrowserRouter>
         <ToastContainer />
@@ -49,7 +49,7 @@ function App() {
           </Container>
         </BrowserRouter>
       </ThemeProvider>
-    </>
+      </Provider>
   );
 }
 
