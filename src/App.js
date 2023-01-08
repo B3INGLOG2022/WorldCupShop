@@ -21,14 +21,14 @@ import { CartPage } from './Pages/Cart/CartPage';
 import { ThanksPage } from './Pages/Thanks/ThanksPage';
 import { ContactPage } from './Pages/ContactUs/ContactPage';
 import { ErrorPage } from './Pages/Error/ErrorPage';
-
-
+import { Provider } from 'react-redux';
+import {store} from './store/index'
 function App() {
 
   const commerce = new Commerce(process.env.REACT_APP_COMMERCEJS_PUBLIC_KEY, true);
 
   return (
-    <>
+    <Provider store={store}>
     <ThemeProvider theme={getTheme()}>
       <BrowserRouter>
         <ToastContainer />
@@ -42,14 +42,14 @@ function App() {
               <Route path="/settings" element={<Settings />} />
               <Route path="/favorites" element={<FavoritesPage commerce={commerce}/>} />
               <Route path="/cart" element={<CartPage commerce={commerce}/>} />
-              <Route path="/thanks" element={<ThanksPage commerce={commerce}/>} />
+              <Route path="/thanks" element={<ThanksPage />} />
               <Route path="/contact-us" element={<ContactPage commerce={commerce}/>} />
               <Route path="/error" element={<ErrorPage />} />
             </Routes>
           </Container>
         </BrowserRouter>
       </ThemeProvider>
-    </>
+      </Provider>
   );
 }
 

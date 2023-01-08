@@ -3,7 +3,7 @@ import logo_WCS from "../../imgs/logos/WORLDCUPSHOP_logo_rbg.png";
 import Button from "@mui/material/Button";
 import { useNavigate } from 'react-router-dom';
 
-export const ThanksPage = ({commerce}) => { 
+export const ThanksPage = () => { 
     const navigate = useNavigate();
     const handleHomeClick = () => navigate('/');
     return (
@@ -15,7 +15,7 @@ export const ThanksPage = ({commerce}) => {
                 Retour à l'accueil
             </Button>
             <br/>
-            <a href="/">Pour plus de précision, Contactez-nous</a>
+            <a href="/contact-us">Pour plus de précision, Contactez-nous</a>
         </StyledThanks>
     )
 }

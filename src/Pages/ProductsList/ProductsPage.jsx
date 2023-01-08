@@ -9,6 +9,7 @@ import { FormControl, InputLabel, MenuItem, Select as MUISelect } from '@mui/mat
 import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ScrollUp } from '../../components/atoms/ScrollUp/ScrollUp.jsx';
 
 
 export const ProductsPage = ({commerce}) => { 
@@ -142,7 +143,7 @@ export const ProductsPage = ({commerce}) => {
 
     return (isLoading === true) ? (<Progress />) : (
         <>
-            <NavBar />
+            <NavBar id="top"/>
             <StyledProductsList>
                 <div className='products-list-header'>
                     <SearchBar options={products} setSearchBarValue={setSearchBarValue}/>
@@ -190,6 +191,7 @@ export const ProductsPage = ({commerce}) => {
                 </div>
             </StyledProductsList>
             <Footer />
+            <ScrollUp scrollStepInPx={15} delayInMs={5}/>
         </>
     )
 }

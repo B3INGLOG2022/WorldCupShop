@@ -17,10 +17,8 @@ import NavBar from '../../components/molecules/navBar/NavBar.jsx';
 
 
 
-export const ContactPage = ({}) => { 
+export const ContactPage = () => { 
 
-
-    
     const form = useRef(); 
     const navigate = useNavigate();
 

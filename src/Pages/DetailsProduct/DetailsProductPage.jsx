@@ -12,6 +12,7 @@ import Button from "@mui/material/Button";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import ReactHtmlParser from 'react-html-parser'
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -26,6 +27,8 @@ import { Progress } from "../../components/atoms/Progress/Progress.jsx";
 export const DetailsProductPage = ({commerce}) => { 
 
     const [size, setSize] = useState('')
+    const [variantId, setVariantId] = useState('')
+    const [stock, setStock] = useState(1)
     const [product, setProduct] = useState({})
     const [isLoading, setIsLoading] = useState(true);
     const [globalRate, setGlobalRate] = useState('');
@@ -49,10 +52,25 @@ export const DetailsProductPage = ({commerce}) => {
     const fetchProduct = () => {
         commerce.products.retrieve(params?.id).then((product) => {
             setProduct(product);
+            setVariantId(product?.variant_groups[0]?.id)
             fetchNotices();
         }).catch(() => {
             navigate('/error');
         });
+    }
+
+    const postCart = async() => {
+        let anon = {}
+        anon[variantId] = size;
+        toast.info('Ajout du produit au panier ...', {
+            position: toast.POSITION.BOTTOM_CENTER
+        })
+        await commerce.cart.add(params?.id, stock, anon).then((res) => {
+            toast.success('Produit ajouté au panier', {
+                position: toast.POSITION.BOTTOM_CENTER
+            })
+        });
+
     }
 
     useEffect(() => {
@@ -61,6 +79,10 @@ export const DetailsProductPage = ({commerce}) => {
 
     const handleChangeSize = (event) => {
         setSize(event.target.value);
+    };
+
+    const handleChangeStock = (event) => {
+        setStock(event.target.value);
     };
 
         
@@ -117,8 +139,30 @@ export const DetailsProductPage = ({commerce}) => {
                             >
                                 <MenuItem value=""><em>Choisissez une taille</em></MenuItem>
                                 {product.variant_groups[0].options.map((size,key) => (
-                                    <MenuItem key={key} value={size.name}>{size.name}</MenuItem>
+                                    <MenuItem key={key} value={size.id}>{size.name}</MenuItem>
                                 ))}
+                            </Select>
+                        </FormControl>
+                    </div>
+                    <div id="Product-Stock">
+                        <FormControl sx={{ m: 1, minWidth: 80 }}>
+                            <InputLabel>Stock</InputLabel>
+                            <Select
+                                value={stock}
+                                onChange={handleChangeStock}
+                                autoWidth
+                                label="Size"
+                            >
+                                <MenuItem key={1} value={1}>1</MenuItem>
+                                <MenuItem key={2} value={2}>2</MenuItem>
+                                <MenuItem key={3} value={3}>3</MenuItem>
+                                <MenuItem key={4} value={4}>4</MenuItem>
+                                <MenuItem key={5} value={5}>5</MenuItem>
+                                <MenuItem key={6} value={6}>6</MenuItem>
+                                <MenuItem key={7} value={7}>7</MenuItem>
+                                <MenuItem key={8} value={8}>8</MenuItem>
+                                <MenuItem key={9} value={9}>9</MenuItem>
+                                <MenuItem key={10} value={10}>10</MenuItem>
                             </Select>
                         </FormControl>
                     </div>
@@ -128,12 +172,13 @@ export const DetailsProductPage = ({commerce}) => {
                         </Typography>
                     </div>
                 </div>
-                <Button id="Product-add-cart-btn" color="inherit" onClick={() => {}} disabled={(size) ? false : true} variant="contained" sx={{m:1, width: .3, backgroundColor: "#FFFFFF",color: "#AD0505"}}>
+                <Button id="Product-add-cart-btn" color="inherit" onClick={() => {postCart()}} disabled={(size) ? false : true} variant="contained" sx={{m:1, width: .3, backgroundColor: "#FFFFFF",color: "#AD0505"}}>
                     <Typography>
                         Ajouter au panier
                     </Typography>
                     <ShoppingCartIcon sx={(size) ? {color: "#AD0505"} : {color: "#FFFFFF"}}/>
                 </Button>
+                <ToastContainer />
                 <hr className="section-product-seperator" />
                 <div>
                     <Accordion>
