@@ -9,12 +9,10 @@ import { useSelector} from 'react-redux'
 import { useDispatch } from "react-redux";
 import { addItem } from "../../store/index.js";
 import { useNavigate } from 'react-router-dom';
-// import { FormControl, Input, InputLabel, Typography } from '@mui/material';
 
 
 export const CartPage = ({commerce}) => { 
 
-    // const [codeReduc, setCodeReduc] = useState('')
     const [items, setItems] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const dispatch = useDispatch();
@@ -44,16 +42,6 @@ export const CartPage = ({commerce}) => {
         }
     }, [cartItemsListSelector])
 
-    // const calculateSold = (reduction) => ((finalPrice-(finalPrice*reduction)).toFixed(2))
-    
-    // const verifyCode = () => {
-    //     console.log(codeReduc)
-    // }
-
-    const validateCart = () => {
-        commerce.cart.delete().then(() => navigate('/thanks'));
-    }
-
     const fetchCart = async () => {
         let listItems
         await commerce.cart.retrieve()
@@ -69,6 +57,16 @@ export const CartPage = ({commerce}) => {
         fetchCart();
     }, []);
 
+    const handleSendMail = () => {
+        commerce.cart.delete();
+        navigate("/thanks");
+    }
+
+    const validateCart = () => {
+        console.log('envoie du mail recap ici')
+        handleSendMail() 
+    }
+
     return isLoading ? (<Progress />) : (
         <>
             <NavBar />
@@ -80,21 +78,6 @@ export const CartPage = ({commerce}) => {
                 <div className="cart-total-price">
                     <p>Total : {cartFinalPriceSelector}€</p>
                 </div>
-                {/* <div className="cart-reduction-section">
-                    <FormControl sx={{ m: 1, width: '30ch', color: "#AD0505 !important",}} variant="standard">
-                        <InputLabel>
-                            <Typography sx={{color: "#AD0505 !important",}}>
-                                Code de Reduction
-                            </Typography>
-                        </InputLabel>
-                        <Input
-                            type='text'
-                            value={codeReduc}
-                            onChange={(e)=>setCodeReduc(e.target.value)}
-                        />
-                    </FormControl>
-                    <Button className="validate-code-reduction" onClick={()=>verifyCode()} color="inherit" variant="outlined" sx={{m:1, width: .5, backgroundColor: "#FFFFFF",color: "#AD0505"}}>Valider code</Button>
-                </div> */}
                 <Button className="cart-btn-buy" onClick={()=>{validateCart()}} disabled={(items.length > 0)?false:true} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#AD0505",color: "#FFFFFF"}}>Payer</Button>
             </StyledCart>
         </>
