@@ -42,7 +42,7 @@ function App() {
               <Route path="/settings" element={<Settings />} />
               <Route path="/favorites" element={<FavoritesPage commerce={commerce}/>} />
               <Route path="/cart" element={<CartPage commerce={commerce}/>} />
-              <Route path="/thanks" element={<ThanksPage commerce={commerce}/>} />
+              <Route path="/thanks" element={<ThanksPage />} />
               <Route path="/contact-us" element={<ContactPage commerce={commerce}/>} />
               <Route path="/error" element={<ErrorPage />} />
             </Routes>

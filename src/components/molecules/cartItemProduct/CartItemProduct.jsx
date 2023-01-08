@@ -8,29 +8,28 @@ import { addItemStock,removeItemStock, deleteItem } from "../../../store/index.j
 
 export const CartItemProduct = ({item, commerce}) => {
 
-  const [stock, setStock] = useState(item.quantity || 1)
+  const [stock, setStock] = useState(item.quantity || 1);
+  const [stockLoading, isStockLoading] = useState(false);
   const [priceProduct, setPriceProduct] = useState(Number((item?.price?.raw*stock).toFixed(2)))
-
-
   const dispatch = useDispatch();
   
   const handleAddOneItem = () => {
     dispatch(addItemStock({id: item.id, price :item?.price?.raw, stock: stock+1}))
     setStock(stock+1);
     setPriceProduct(Number((item?.price?.raw*(stock+1)).toFixed(2)))
-    commerce.cart.update(item.id, stock+1).then((res) => {console.log(res)})
+    commerce.cart.update(item.id, {quantity: stock+1})
   }
 
   const handleRemoveOneItem = () => {
     dispatch(removeItemStock({id: item.id, price :item?.price?.raw, stock: stock-1}))
     setStock(stock-1);
     setPriceProduct(Number((item?.price?.raw*(stock-1)).toFixed(2)))
-    commerce.cart.update(item.id, stock-1).then((res) => {console.log(res)})
+    commerce.cart.update(item.id, {quantity: stock-1})
   }
 
   const handleDeleteItem = () => {
-    dispatch(deleteItem())
-    commerce.cart.remove(item.id).then((response) => console.log(response));
+    dispatch(deleteItem({id: item.id}))
+    commerce.cart.remove(item.id);
   }
 
   return (

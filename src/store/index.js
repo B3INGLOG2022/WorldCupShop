@@ -43,12 +43,15 @@ const cartSlice = createSlice(
                 return state;
             },
             deleteItem: (state, action) => {
-                state = state.filter((t) => t.id !== action.payload )
-                let sum = 0;
-                state.listItems.map((item) => {
-                    sum+= Number((item.price*item.stock).toFixed(2));
-                })
-                state.cartPrice = Number(sum.toFixed(2));
+                if (state.listItems.find(item => item.id === action.payload.id)) {
+                    const newList = state.listItems.filter((item) => item.id !== action.payload.id);
+                    state.listItems = newList;
+                    let sum = 0;
+                    state.listItems.map((item) => {
+                        sum += Number((item.price*item.stock).toFixed(2));
+                    })
+                    state.cartPrice = Number(sum.toFixed(2));
+                }
                 return state;   
             },
         }

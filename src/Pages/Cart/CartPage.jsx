@@ -2,48 +2,56 @@ import NavBar from '../../components/molecules/navBar/NavBar.jsx';
 import {StyledCart} from "./style.js";
 import { useState } from 'react';
 import { CartItemProduct } from '../../components/molecules/cartItemProduct/CartItemProduct.jsx';
-import { Button, FormControl, Input, InputLabel, Typography } from '@mui/material';
+import { Button } from '@mui/material';
 import { useEffect } from 'react';
 import { Progress } from '../../components/atoms/Progress/Progress.jsx';
 import { useSelector} from 'react-redux'
 import { useDispatch } from "react-redux";
 import { addItem } from "../../store/index.js";
+import { useNavigate } from 'react-router-dom';
+// import { FormControl, Input, InputLabel, Typography } from '@mui/material';
 
 
 export const CartPage = ({commerce}) => { 
 
-    const [finalPrice, setFinalPrice] = useState(0)
-    const [codeReduc, setCodeReduc] = useState('')
+    // const [codeReduc, setCodeReduc] = useState('')
     const [items, setItems] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const cartFinalPriceSelector  = useSelector((state) => {
         return state.cart.cartPrice
+    })
+    
+    const cartItemsListSelector  = useSelector((state) => {
+        return state.cart.listItems
     })
 
     useEffect(() => {
         console.log('Price', cartFinalPriceSelector);
     }, [cartFinalPriceSelector])
-
-    const calculateGlobalPrice = (items) => {
-        let listPrices = [];
-        let totalPrice = 0;
-        items.map((item)=>listPrices.push(item.line_total.formatted))
-        for (var i = 0; i < listPrices.length; i++) {
-            totalPrice += Number(listPrices[i]);
-        }
-        setFinalPrice(totalPrice.toFixed(2));
-    }
-
-    const calculateSold = (reduction) => ((finalPrice-(finalPrice*reduction)).toFixed(2))
     
-    const verifyCode = () => {
-        console.log(codeReduc)
-    }
+    useEffect(() => {
+        if (items.length > 0) {
+            let newListItems = [];
+            items.map((item)=> {
+                if (cartItemsListSelector.find((saveItem)=>saveItem.id === item.id)){
+                    newListItems.push(item);
+                }
+            })
+            setItems(newListItems)
+        }
+    }, [cartItemsListSelector])
+
+    // const calculateSold = (reduction) => ((finalPrice-(finalPrice*reduction)).toFixed(2))
+    
+    // const verifyCode = () => {
+    //     console.log(codeReduc)
+    // }
 
     const validateCart = () => {
-        console.log("panier validé")
+        commerce.cart.delete().then(() => navigate('/thanks'));
     }
 
     const fetchCart = async () => {
@@ -55,7 +63,6 @@ export const CartPage = ({commerce}) => {
         });
         setIsLoading(false);
         setItems(listItems);
-        calculateGlobalPrice(listItems)
     }
 
     useEffect(() => {
@@ -68,12 +75,12 @@ export const CartPage = ({commerce}) => {
             <StyledCart>
                 <h2>Récapitulatif de mon panier</h2>
                 {(items.length > 0) ? items.map(item => {
-                    return (<CartItemProduct key={item.id} item={item} items={items} setItems={setItems} commerce={commerce}/>)
+                    return (<CartItemProduct key={item.id} item={item} commerce={commerce}/>)
                 }): <p>aucun article</p>},
                 <div className="cart-total-price">
                     <p>Total : {cartFinalPriceSelector}€</p>
                 </div>
-                <div className="cart-reduction-section">
+                {/* <div className="cart-reduction-section">
                     <FormControl sx={{ m: 1, width: '30ch', color: "#AD0505 !important",}} variant="standard">
                         <InputLabel>
                             <Typography sx={{color: "#AD0505 !important",}}>
@@ -87,8 +94,8 @@ export const CartPage = ({commerce}) => {
                         />
                     </FormControl>
                     <Button className="validate-code-reduction" onClick={()=>verifyCode()} color="inherit" variant="outlined" sx={{m:1, width: .5, backgroundColor: "#FFFFFF",color: "#AD0505"}}>Valider code</Button>
-                </div>
-                <Button className="cart-btn-buy" onClick={()=>{validateCart()}} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#AD0505",color: "#FFFFFF"}}>Payer</Button>
+                </div> */}
+                <Button className="cart-btn-buy" onClick={()=>{validateCart()}} disabled={(items.length > 0)?false:true} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#AD0505",color: "#FFFFFF"}}>Payer</Button>
             </StyledCart>
         </>
     )

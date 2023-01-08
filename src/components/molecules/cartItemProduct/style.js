@@ -57,6 +57,10 @@ export const StyledCartItemProduct = styled.div`
         margin-bottom: auto;
         margin-right: 5px;
     }
+    
+    .cart-product-item-delete svg{
+        cursor:pointer;
+    }
 
     img{
         margin : 5px;
