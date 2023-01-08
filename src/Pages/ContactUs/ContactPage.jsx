@@ -1,7 +1,6 @@
-import React, { useRef,useState } from 'react';
+import React, { useRef } from 'react';
 import emailjs from '@emailjs/browser';
 import {StyledContactUs} from "./style.js";
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Link } from "react-router-dom";
 import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
@@ -11,10 +10,6 @@ import Button from "@mui/material/Button";
 import {  toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import NavBar from '../../components/molecules/navBar/NavBar.jsx';
-
-
-
-
 
 
 export const ContactPage = () => { 
@@ -27,8 +22,15 @@ export const ContactPage = () => {
         emailjs 
         .sendForm(process.env.REACT_APP_SERVICE_ID,process.env.REACT_APP_TEMPLATE_ID,form.current,process.env.REACT_APP_PUBLIC_KEY ) 
         .then(
-                (result) => { toast.success('Mail envoyé', {position: toast.POSITION.BOTTOM_CENTER}); console.log(result.text); handleSendMail() },
-                (error) => { console.log(error.text); } ); };
+                (result) => { 
+                    toast.success('Mail envoyé', {position: toast.POSITION.BOTTOM_CENTER}); 
+                    handleSendMail() 
+                },
+                (error) => { 
+                    navigate("/error");
+                } 
+        );
+     };
 
     const handleSendMail = () => navigate("/");
 

@@ -9,7 +9,6 @@ import { addItemStock,removeItemStock, deleteItem } from "../../../store/index.j
 export const CartItemProduct = ({item, commerce}) => {
 
   const [stock, setStock] = useState(item.quantity || 1);
-  const [stockLoading, isStockLoading] = useState(false);
   const [priceProduct, setPriceProduct] = useState(Number((item?.price?.raw*stock).toFixed(2)))
   const dispatch = useDispatch();
   
