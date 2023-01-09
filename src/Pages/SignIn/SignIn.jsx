@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {StyledSignIn} from "./style.js"
 import { useNavigate } from "react-router-dom";
 import NavBar from '../../components/molecules/navBar/NavBar.jsx';
@@ -12,12 +12,17 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { ToastContainer, toast } from 'react-toastify';
 import Button from "@mui/material/Button";
 import { Typography } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { login } from "../../store/index_auth.js";
 
 export const SignIn = () => {
   
   const [email, setEmail] = useState('');
   const [psw, setPsw] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -28,15 +33,47 @@ export const SignIn = () => {
 
   const checkEmail = () => /\S+@\S+\.\S+/.test(email);
 
-  const handleSignInClick = () => {
-    if (checkEmail() && psw !== ''){
-      toast.success('Connexion fictive réussite', {
-        position: toast.POSITION.BOTTOM_CENTER
-      })
+  const authSelector  = useSelector((state) => {
+    return state?.auth?.token
+  })
+
+  useEffect(() => {
+      console.log('access_token :', authSelector);
+  }, [authSelector])
+
+  const handleSignInClick = async() => {
+    setLoading(true)
+    if (checkEmail()){
+      await axios
+        .post(process.env.REACT_APP_DIRECTUS_URL+'auth/login',
+        JSON.stringify({
+          email:email,
+          password:psw
+        }),{
+          "headers": {
+          "Content-Type": "application/json"
+        }})
+        .then((res) => {
+          console.log(res.data.data)
+          dispatch(login({email: email, token :res?.data?.data?.access_token, refresh :res?.data?.data?.refresh_token}));
+          toast.success('Connexion fictive réussite', {
+            position: toast.POSITION.BOTTOM_CENTER
+          })
+          setLoading(false);
+        })
+        .catch((err) => {
+            setPsw('')
+            toast.error('Email ou mot de passe invalide', {
+              position: toast.POSITION.BOTTOM_CENTER
+            })
+            setLoading(false)
+        })
     } else {
       toast.error('Email ou mot de passe invalide', {
         position: toast.POSITION.BOTTOM_CENTER
       })
+      setPsw('')
+      setLoading(false)
     }
     
   };  
@@ -90,7 +127,7 @@ export const SignIn = () => {
           </FormControl>
         </div>  
         <div className="signin-btns">
-          <Button className="signin-btn-connexion" onClick={handleSignInClick} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#AD0505",color: "#FFFFFF"}}>Se connecter</Button>
+          <Button className="signin-btn-connexion" disabled={loading?true:false} onClick={handleSignInClick} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#AD0505",color: "#FFFFFF"}}>Se connecter</Button>
           <Button onClick={handleSignUpClick} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#FFFFFF",color: "#AD0505"}}>Devenir membre</Button>
         </div>    
         <ToastContainer />

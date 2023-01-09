@@ -5,8 +5,7 @@ import { CartItemProduct } from '../../components/molecules/cartItemProduct/Cart
 import { Button } from '@mui/material';
 import { useEffect } from 'react';
 import { Progress } from '../../components/atoms/Progress/Progress.jsx';
-import { useSelector} from 'react-redux'
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch} from 'react-redux'
 import { addItem } from "../../store/index.js";
 import { useNavigate } from 'react-router-dom';
 

@@ -27,7 +27,7 @@ export const ErrorPage = () => {
                 </div>
                 <div className='div'>
 
-                    <h5> Ce n'est pas le page que vous rechercher </h5>
+                    <h5> Ce n'est pas le page que vous recherchez </h5>
                 </div>
                 <div className='div'>
                     <img src={erreurImg} alt="erreurImg" />
