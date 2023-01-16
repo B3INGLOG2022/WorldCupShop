@@ -14,9 +14,9 @@ import Button from "@mui/material/Button";
 import { Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { login } from "../../store/index_auth.js";
+import { login } from "../../slices/auth_slice";
 
-export const SignIn = () => {
+export const SignIn = ({commerce}) => {
   
   const [email, setEmail] = useState('');
   const [psw, setPsw] = useState('');
@@ -33,14 +33,6 @@ export const SignIn = () => {
 
   const checkEmail = () => /\S+@\S+\.\S+/.test(email);
 
-  const authSelector  = useSelector((state) => {
-    return state?.auth?.token
-  })
-
-  useEffect(() => {
-      console.log('access_token :', authSelector);
-  }, [authSelector])
-
   const handleSignInClick = async() => {
     setLoading(true)
     if (checkEmail()){
@@ -54,9 +46,8 @@ export const SignIn = () => {
           "Content-Type": "application/json"
         }})
         .then((res) => {
-          console.log(res.data.data)
           dispatch(login({email: email, token :res?.data?.data?.access_token, refresh :res?.data?.data?.refresh_token}));
-          toast.success('Connexion fictive réussite', {
+          toast.success('Connexion réussite', {
             position: toast.POSITION.BOTTOM_CENTER
           })
           setLoading(false);
@@ -79,11 +70,21 @@ export const SignIn = () => {
   };  
   
   const handleSignUpClick = () => navigate("/sign-up");
+
+  const isLogged  = useSelector((state) => {
+    return state?.auth?.isLoggedIn
+  })
+
+  useEffect(() => {
+    if (isLogged){
+      navigate("/")
+    }
+  }, [isLogged]);
   
   return (
 
     <StyledSignIn className="Login">
-      <NavBar />
+      <NavBar commerce={commerce}/>
       <div className="signin-body">
         <h2>Connectez-vous</h2>
         <div className="signin-email">

@@ -1,25 +1,38 @@
-import { createSlice, configureStore } from "@reduxjs/toolkit"
+
+import { createSlice } from "@reduxjs/toolkit"
 import axios from "axios";
 
-const auth = {
+const initialAuth = {
     email:localStorage.getItem("email")||'',
     token:localStorage.getItem("access_token")||'',
-    refreshToken:localStorage.getItem("refresh_token")||''
+    refreshToken:localStorage.getItem("refresh_token")||'',
+    cart:localStorage.getItem("cart")||'',
+    idCustomer:localStorage.getItem("id_customer")||'',
 }
 
-const authSlice = createSlice(
+export const authSlice = createSlice(
     {
         name:"auth",
-        initialState: (auth?.token !== '')
-        ? { isLoggedIn: true, auth}
-        : { isLoggedIn: false, auth},
+        initialState: (initialAuth?.token !== '')
+        ? { isLoggedIn: true, initialAuth}
+        : { isLoggedIn: false, initialAuth},
         reducers: {
+            signup: (state, action) => {
+                console.log("signup ok")
+                state.email = action.payload.email;
+                state.token = action.payload.token;
+                state.refreshToken = action.payload.refresh;
+                state.isLoggedIn = true;
+                window.localStorage.setItem("access_token", action.payload.token);
+                window.localStorage.setItem("refresh_token", action.payload.refresh);
+                return state;   
+            },
             login: (state, action) => {
                 console.log("login ok")
                 state.email = action.payload.email;
                 state.token = action.payload.token;
                 state.refreshToken = action.payload.refresh;
-                state.is_login = true;
+                state.isLoggedIn = true;
                 window.localStorage.setItem("access_token", action.payload.token);
                 window.localStorage.setItem("refresh_token", action.payload.refresh);
                 return state;   
@@ -31,7 +44,7 @@ const authSlice = createSlice(
                 state.refreshToken='';
                 localStorage.removeItem("access_token");
                 localStorage.removeItem("refresh_token");
-                state.is_login=false;
+                state.isLoggedIn=false;
                 return state;   
             },
             refresh: async (state, action) => {
@@ -54,13 +67,9 @@ const authSlice = createSlice(
     }
 );
 
-export const authStore = configureStore({
-    reducer: {
-        auth: authSlice.reducers,
-    }
-})
 
 export const {
+    signup,
     login,
     logout,
     refresh
