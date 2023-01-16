@@ -22,14 +22,24 @@ import SearchIcon from '@mui/icons-material/Search';
 // import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Button from "@mui/material/Button";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../../slices/auth_slice.js";
+import { emptyCart } from "../../../slices/cart_slice.js";
 
-export default function Navbar() {
+export default function Navbar({commerce}) {
 
     const [open, setState] = useState(false);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     
     const handleSignInClick = () => navigate('/sign-in');
-    const handleSignOutClick = () => navigate('/sign-up');
+    const handleSignUpClick = () => navigate('/sign-up');
+    const handleSignOutClick = () => {
+        dispatch(logout());
+        dispatch(emptyCart());
+        commerce.cart.empty();
+        navigate('/sign-in');
+    }
 
     const toggleDrawer = (open) => (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -37,6 +47,10 @@ export default function Navbar() {
         }
         setState(open);
     };
+
+    const authSelector  = useSelector((state) => {
+        return state?.auth?.isLoggedIn
+      })
 
     return (
 
@@ -80,6 +94,7 @@ export default function Navbar() {
                                                 <ListItemText primary="Panier" sx={{color: "#AD0505"}}/>
                                         </Link>
                                     </li>
+                                    {(!authSelector)?
                                     <li><Link to='/sign-in'>
                                                 <ListItemIcon>
                                                     <PersonIcon sx={{color: "#AD0505"}}/>
@@ -87,6 +102,11 @@ export default function Navbar() {
                                                 <ListItemText primary="Connexion" sx={{color: "#AD0505"}}/>
                                         </Link>
                                     </li>
+                                    :
+                                    <li>
+                                        <Button onClick={handleSignOutClick} color="inherit" variant="contained" sx={{m:1, backgroundColor: "#FFFFFF",color: "#AD0505"}}>Déconnexion</Button>
+                                    </li>
+                                }
                                 </ul>
                             </nav>
                         </Box>
@@ -172,8 +192,15 @@ export default function Navbar() {
                                     left: "50%", 
                                     transform: "translate(-50%, 0)"}}
                                 >
-                                    <Button onClick={handleSignOutClick} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#FFFFFF",color: "#AD0505"}}>S'inscrire</Button>
-                                    <Button onClick={handleSignInClick} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#AD0505",color: "#FFFFFF"}}>Connexion</Button>
+                                    {(!authSelector)?
+                                        <>
+                                            <Button onClick={handleSignUpClick} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#FFFFFF",color: "#AD0505"}}>S'inscrire</Button>
+                                            <Button onClick={handleSignInClick} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#AD0505",color: "#FFFFFF"}}>Connexion</Button>
+                                        </>
+                                    :
+                                        <Button onClick={handleSignOutClick} color="inherit" variant="contained" sx={{m:1, backgroundColor: "#FFFFFF",color: "#AD0505"}}>Déconnexion</Button>
+                                }
+                                    
                                 </Box>
                             </Box>
                         

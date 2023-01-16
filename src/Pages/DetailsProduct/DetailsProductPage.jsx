@@ -23,6 +23,7 @@ import { Notice } from "../../components/molecules/notice/Notice.jsx";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom';
 import { Progress } from "../../components/atoms/Progress/Progress.jsx";
+import { useSelector } from "react-redux";
 
 export const DetailsProductPage = ({commerce}) => { 
 
@@ -38,9 +39,19 @@ export const DetailsProductPage = ({commerce}) => {
     const navigate = useNavigate();
     const params = useParams();
 
+    const authSelector  = useSelector((state) => {
+        return state?.auth?.isLoggedIn
+      })
+    
+    useEffect(() => {
+    if (!authSelector) {
+        navigate("/sign-in")
+    }
+    }, [])
+
     const fetchNotices = async () => {
         await axios
-            .get(process.env.REACT_APP_DIRECTUS_URL+'/items/notice')
+            .get(process.env.REACT_APP_DIRECTUS_URL+'items/notice')
             .then((res) => {
                 getNoticesById(res.data)
             })
@@ -113,7 +124,7 @@ export const DetailsProductPage = ({commerce}) => {
 
     return isLoading ? (<Progress />) : (
         <>
-            <NavBar />
+            <NavBar commerce={commerce}/>
             <StyledDetailsProduct>
                 <div className="product-header">
                     <Link to={"/products"}>

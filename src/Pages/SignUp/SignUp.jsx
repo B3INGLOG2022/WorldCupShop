@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {StyledSignUp} from "./style.js"
 import { useNavigate } from "react-router-dom";
 import NavBar from '../../components/molecules/navBar/NavBar.jsx';
@@ -12,8 +12,9 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { ToastContainer, toast } from 'react-toastify';
 import Button from "@mui/material/Button";
 import { Typography } from "@mui/material";
+import { useSelector } from "react-redux";
 
-export const SignUp = () => {
+export const SignUp = (commerce) => {
   
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -66,11 +67,20 @@ export const SignUp = () => {
     
     const handleSignInClick = () => navigate("/sign-in");
     
+    const isLogged  = useSelector((state) => {
+        return state?.auth?.isLoggedIn
+      })
+    
+    useEffect(() => {
+        if (isLogged){
+            navigate("/")
+        }
+    }, [isLogged]);
 
     return (
 
         <StyledSignUp className="Register">
-            <NavBar />
+            <NavBar commerce={commerce}/>
             <div className="signup-body">
                 <h2>Devenez membre</h2>
                 <div className="signup-undertitle">

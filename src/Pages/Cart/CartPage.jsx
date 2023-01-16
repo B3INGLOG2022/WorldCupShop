@@ -5,9 +5,8 @@ import { CartItemProduct } from '../../components/molecules/cartItemProduct/Cart
 import { Button } from '@mui/material';
 import { useEffect } from 'react';
 import { Progress } from '../../components/atoms/Progress/Progress.jsx';
-import { useSelector} from 'react-redux'
-import { useDispatch } from "react-redux";
-import { addItem } from "../../store/index.js";
+import { useSelector, useDispatch} from 'react-redux'
+import { addItem } from "../../slices/cart_slice";
 import { useNavigate } from 'react-router-dom';
 
 
@@ -25,6 +24,17 @@ export const CartPage = ({commerce}) => {
     const cartItemsListSelector  = useSelector((state) => {
         return state.cart.listItems
     })
+
+    const isLogged  = useSelector((state) => {
+        return state?.auth?.isLoggedIn
+    })
+
+    useEffect(() => {
+        if (!isLogged){
+            navigate("/sign-in");
+        }
+    }, [isLogged]);
+    
 
     useEffect(() => {
         console.log('Price', cartFinalPriceSelector);
@@ -69,7 +79,7 @@ export const CartPage = ({commerce}) => {
 
     return isLoading ? (<Progress />) : (
         <>
-            <NavBar />
+            <NavBar commerce={commerce}/>
             <StyledCart>
                 <h2>Récapitulatif de mon panier</h2>
                 {(items.length > 0) ? items.map(item => {

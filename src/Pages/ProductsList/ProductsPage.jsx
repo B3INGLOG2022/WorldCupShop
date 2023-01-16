@@ -10,6 +10,7 @@ import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ScrollUp } from '../../components/atoms/ScrollUp/ScrollUp.jsx';
+import { useSelector } from 'react-redux';
 
 
 export const ProductsPage = ({commerce}) => { 
@@ -23,6 +24,17 @@ export const ProductsPage = ({commerce}) => {
     const [notices, setNotices] = useState(null);
     const [sort, setSort] = useState(0) 
     const navigate = useNavigate();
+
+    const authSelector  = useSelector((state) => {
+        return state?.auth?.isLoggedIn
+      })
+    
+    useEffect(() => {
+        if (!authSelector) {
+            navigate("/sign-in")
+        }
+        fetchCategories();
+    }, [])
 
     // sort functions
     const sortByPriceDec = () => {
@@ -51,7 +63,7 @@ export const ProductsPage = ({commerce}) => {
     // fetch functions
     const fetchNotices = async () => {
         await axios
-            .get(process.env.REACT_APP_DIRECTUS_URL+'/items/notice')
+            .get(process.env.REACT_APP_DIRECTUS_URL+'items/notice')
             .then((res) => {
                 setNotices(res.data)
                 setIsLoading(false);
@@ -62,7 +74,7 @@ export const ProductsPage = ({commerce}) => {
             })
     }
 
-    const fetchProducts = async(selectedBrands) => {
+    const fetchProducts = async() => {
         await commerce.products.list().then((products) => {
             setProducts(products.data);
             setProductsFilters(products.data);
@@ -84,16 +96,12 @@ export const ProductsPage = ({commerce}) => {
             });
             setDataBrandFormated(allBrandsFormated);
             setOptionsBrandFormated(allBrandsFormated)
-            fetchProducts(allBrands);
+            fetchProducts();
         }).catch((error) => {
             // navigate('/error');
             console.log(error)
         });
     }
-
-    useEffect(() => {
-        fetchCategories();
-    }, []);
 
     useEffect(() => {
         if (!isLoading){
@@ -143,7 +151,7 @@ export const ProductsPage = ({commerce}) => {
 
     return (isLoading === true) ? (<Progress />) : (
         <>
-            <NavBar id="top"/>
+            <NavBar id="top" commerce={commerce}/>
             <StyledProductsList>
                 <div className='products-list-header'>
                     <SearchBar options={products} setSearchBarValue={setSearchBarValue}/>
