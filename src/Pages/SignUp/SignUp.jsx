@@ -28,7 +28,7 @@ export const SignUp = (commerce) => {
     const [showPasswordVerify, setShowPasswordVerify] = useState(false);
     const [loading, setLoading] = useState(false);
     const [tokens, setTokens] = useState([]);
-    const [cstmrId, setCstmrId] = useState();
+    const [cstmrId, setCstmrId] = useState("cstmr_A12JwrBegRwmmm"); // id pour debug
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -148,27 +148,27 @@ export const SignUp = (commerce) => {
   
   // récupération de l'id de l'utilisateur pour
   // TODO erreur de reqete à corriger
-  const getCstmrsId = async () => {
-    await axios
-      .get(process.env.REACT_APP_COMMERCEJS_URL+'customers',
-        JSON.stringify({
-          "query":"corentin.mailler@ynov.com",
-        }),{
-          headers: {
-          "X-Authorization": "sk_test_49391ef22a406d71ffaae2a0ff96fe23556381e119d4d",
-          "Content-Type": "application/json"
-        }})
-      .then((res) => {
-        toast.success('Connexion réussite', {
-          position: toast.POSITION.BOTTOM_CENTER
-        })
-        console.log(res)
-        setCstmrId(res?.data[0]?.email);
-      })
-      .catch((err) => {
-        console.log(err)  
-      })
-  }
+//   const getCstmrsId = async () => {
+//     await axios
+//       .get(process.env.REACT_APP_COMMERCEJS_URL+'customers',
+//         JSON.stringify({
+//           "query":"corentin.mailler@ynov.com",
+//         }),{
+//           headers: {
+//           "X-Authorization": "sk_test_49391ef22a406d71ffaae2a0ff96fe23556381e119d4d",
+//           "Content-Type": "application/json"
+//         }})
+//       .then((res) => {
+//         toast.success('Connexion réussite', {
+//           position: toast.POSITION.BOTTOM_CENTER
+//         })
+//         console.log(res)
+//         setCstmrId(res?.data[0]?.email);
+//       })
+//       .catch((err) => {
+//         console.log(err)  
+//       })
+//   }
 
     const handleSignUpClick = async() => {
         setLoading(true)
@@ -178,7 +178,7 @@ export const SignUp = (commerce) => {
                         await createUserDirectus();
                         await createUserCommerceJs();
                         await connectUserDirectus();
-                        await getCstmrsId();
+                        //await getCstmrsId();
                         console.log(cstmrId !== undefined && tokens !== [])
                         if (cstmrId !== undefined && tokens !== []) {
                             dispatch(login({email: email, token :tokens[0], refresh :tokens[1], cstmr_Id : cstmrId}));

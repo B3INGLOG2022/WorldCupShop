@@ -8,9 +8,17 @@ const initialAuth = {
     email:localStorage.getItem("email")||'',
     token:localStorage.getItem("access_token")||'',
     refreshToken:localStorage.getItem("refresh_token")||'',    
-    admToken:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU1MjM4YzgxLTZmNzItNDZjYS05YTcyLTZkMDEyOGMwOWFlZCIsInJvbGUiOiIzOWVmNzFjYy1lNzFmLTQzODEtYWM3Ni0zM2UwNDFhMDY3ZDEiLCJhcHBfYWNjZXNzIjoxLCJhZG1pbl9hY2Nlc3MiOjEsImlhdCI6MTY3Mzk5NzI2MSwiZXhwIjoxNjczOTk4MTYxLCJpc3MiOiJkaXJlY3R1cyJ9.Eiesm_2my-cA4z_1G-HrPLKLfXfUc8jq7iGDTD-_xX0',
+    admToken:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU1MjM4YzgxLTZmNzItNDZjYS05YTcyLTZkMDEyOGMwOWFlZCIsInJvbGUiOiIzOWVmNzFjYy1lNzFmLTQzODEtYWM3Ni0zM2UwNDFhMDY3ZDEiLCJhcHBfYWNjZXNzIjoxLCJhZG1pbl9hY2Nlc3MiOjEsImlhdCI6MTY3NDAwMjY4MywiZXhwIjoxNjc0MDAzNTgzLCJpc3MiOiJkaXJlY3R1cyJ9.8uzr9x2GZnrGlj-J_CYSqG0T4OSiPwIEO5Qqid7sZRE',
     cstmrId:localStorage.getItem("cstmrId")||'',
 }
+
+// aide pour générer un admToken pour directus :
+// curl --location --request POST 'http://127.0.0.1:8055/auth/login' \
+// --header 'Content-Type: application/json' \
+// --data-raw '{
+//     "email": "admin@example.com",
+//     "password": "password"
+// }'
 
 export const authSlice = createSlice(
     {
