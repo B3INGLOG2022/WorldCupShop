@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit"
-import {axios} from 'axios';
 
 const initialCart = {
     cartPrice:0,
@@ -13,7 +12,7 @@ export const cartSlice = createSlice(
         reducers: {
             addItem: (state, action) => {
                 if (!(state.listItems.find(item => item.id === action.payload.id))) {
-                    state.listItems.push({id:action.payload.id, price:action.payload.price, stock:action.payload.stock})
+                    state.listItems.push({id:action.payload.id, price:action.payload.price, stock:action.payload.stock, size:action.payload.size})
                     let sum = 0;
                     state.listItems.map((item) => {
                         sum += Number((item.price*item.stock).toFixed(2));

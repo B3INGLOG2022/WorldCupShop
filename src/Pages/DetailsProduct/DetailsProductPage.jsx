@@ -41,7 +41,12 @@ export const DetailsProductPage = ({commerce}) => {
 
     const authSelector  = useSelector((state) => {
         return state?.auth?.isLoggedIn
-      })
+      })    
+      
+      // TODO à modifier quand le customerid sera récupéré correctement
+    // const cstmrIdSelector  = useSelector((state) => {
+    //     return state?.auth?.cstmrId
+    // })
     
     useEffect(() => {
     if (!authSelector) {

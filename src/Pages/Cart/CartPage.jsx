@@ -57,7 +57,8 @@ export const CartPage = ({commerce}) => {
         await commerce.cart.retrieve()
         .then((cart) => {
             listItems = cart.line_items;
-            listItems.map((item) => dispatch(addItem({id: item.id, price :item?.price?.raw, stock: item.quantity})))
+            listItems.map((item) => dispatch(addItem({id: item.id, price :item?.price?.raw, stock: item.quantity, size: item.selected_options[0].option_name
+            })))
         });
         setIsLoading(false);
         setItems(listItems);
