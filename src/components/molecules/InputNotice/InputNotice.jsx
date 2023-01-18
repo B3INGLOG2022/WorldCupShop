@@ -10,6 +10,7 @@ import { useState } from "react";
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, currentUserComment}) => {
 
@@ -17,8 +18,11 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
     const [title, setTitle] = useState((currentUserTitle && currentUserTitle) || "")
     const [message, setMessage] = useState((currentUserComment && currentUserComment) || "") //récupérer note de l'utilisateur sur l'article si existant
     const navigate = useNavigate();
-    const access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU1MjM4YzgxLTZmNzItNDZjYS05YTcyLTZkMDEyOGMwOWFlZCIsInJvbGUiOiIzOWVmNzFjYy1lNzFmLTQzODEtYWM3Ni0zM2UwNDFhMDY3ZDEiLCJhcHBfYWNjZXNzIjoxLCJhZG1pbl9hY2Nlc3MiOjEsImlhdCI6MTY3Mjc0NTU4OCwiZXhwIjoxNjcyNzQ2NDg4LCJpc3MiOiJkaXJlY3R1cyJ9.3VVBC2u-3qSujd6yoBuQULn16d79e_q0bIyjH74MtTQ"
     const params = useParams();
+
+    const tokenSelector  = useSelector((state) => {
+        return state?.auth?.admToken // TODO à remplacer avec le token de l'utilisateur
+    })
     
     const onSubmitRating = async () => {
         if ((rate !== currentUserValue)||(title !== currentUserTitle)||(message !== currentUserComment)){
@@ -31,7 +35,7 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
                             Content:message,
                         }),{ 
                             "headers": {
-                                "Authorization": "Bearer "+access_token,
+                                "Authorization": "Bearer "+tokenSelector,
                                 "Content-Type": "application/json"
                             },
                         }
@@ -60,7 +64,7 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
                         "Content": message
                     }), {
                         "headers" : {
-                            "Authorization": "Bearer "+access_token,
+                            "Authorization": "Bearer "+tokenSelector,
                             "Content-Type": "application/json"
                         }
                     },)

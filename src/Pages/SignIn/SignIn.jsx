@@ -19,11 +19,25 @@ import { login } from "../../slices/auth_slice";
 export const SignIn = ({commerce}) => {
   
   const [email, setEmail] = useState('');
-  const [psw, setPsw] = useState('');
+  const [pwd, setPwd] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [tokens, setTokens] = useState([]);
+  const [cstmrId, setCstmrId] = useState();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // une fois connecté --> changement de page
+  const isLogged  = useSelector((state) => {
+    return state?.auth?.isLoggedIn
+  })
+
+  useEffect(() => {
+      if (isLogged){
+          navigate("/")
+      }
+  }, [isLogged]);
+    //////////////////////////////////////
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -33,53 +47,74 @@ export const SignIn = ({commerce}) => {
 
   const checkEmail = () => /\S+@\S+\.\S+/.test(email);
 
+  const handleSignUpClick = () => navigate("/sign-up");
+
+  // connexion au compte directus + recuperation des tokens
+  const connectUserDirectus = async () => {
+    await axios
+      .post(process.env.REACT_APP_DIRECTUS_URL+'auth/login',
+      JSON.stringify({
+        email:email,
+        password:pwd
+      }),{
+        "headers": {
+        "Content-Type": "application/json"
+      }})
+      .then((res) => {
+        toast.success('Connexion réussite', {
+          position: toast.POSITION.BOTTOM_CENTER
+        })
+        console.log([res?.data?.data?.access_token, res?.data?.data?.refresh_token])
+        setTokens([res?.data?.data?.access_token, res?.data?.data?.refresh_token]);
+      })
+      .catch((err) => {
+        console.log(err) 
+      })
+  }
+  
+  // récupération de l'id de l'utilisateur pour
+  // TODO erreur de reqete à corriger
+  const getCstmrsId = async () => {
+    await axios
+      .get(process.env.REACT_APP_COMMERCEJS_URL+'customers',
+        JSON.stringify({
+          "query":"corentin.mailler@ynov.com",
+        }),{
+          headers: {
+          "X-Authorization": "sk_test_49391ef22a406d71ffaae2a0ff96fe23556381e119d4d",
+          "Content-Type": "application/json"
+        }})
+      .then((res) => {
+        toast.success('Connexion réussite', {
+          position: toast.POSITION.BOTTOM_CENTER
+        })
+        console.log(res)
+        setCstmrId(res?.data[0]?.email);
+      })
+      .catch((err) => {
+        console.log(err)  
+      })
+  }
+
   const handleSignInClick = async() => {
     setLoading(true)
     if (checkEmail()){
-      await axios
-        .post(process.env.REACT_APP_DIRECTUS_URL+'auth/login',
-        JSON.stringify({
-          email:email,
-          password:psw
-        }),{
-          "headers": {
-          "Content-Type": "application/json"
-        }})
-        .then((res) => {
-          dispatch(login({email: email, token :res?.data?.data?.access_token, refresh :res?.data?.data?.refresh_token}));
-          toast.success('Connexion réussite', {
-            position: toast.POSITION.BOTTOM_CENTER
-          })
-          setLoading(false);
-        })
-        .catch((err) => {
-            setPsw('')
-            toast.error('Email ou mot de passe invalide', {
-              position: toast.POSITION.BOTTOM_CENTER
-            })
-            setLoading(false)
-        })
+      await connectUserDirectus();
+      await getCstmrsId();
+      console.log(cstmrId !== undefined && tokens !== [])
+      if (cstmrId !== undefined && tokens !== []) {
+        dispatch(login({email: email, token :tokens[0], refresh :tokens[1], cstmr_Id : cstmrId}));
+      } 
+      setLoading(false);
     } else {
       toast.error('Email ou mot de passe invalide', {
         position: toast.POSITION.BOTTOM_CENTER
       })
-      setPsw('')
+      setPwd('')
       setLoading(false)
     }
     
   };  
-  
-  const handleSignUpClick = () => navigate("/sign-up");
-
-  const isLogged  = useSelector((state) => {
-    return state?.auth?.isLoggedIn
-  })
-
-  useEffect(() => {
-    if (isLogged){
-      navigate("/")
-    }
-  }, [isLogged]);
   
   return (
 
@@ -111,8 +146,8 @@ export const SignIn = ({commerce}) => {
               </InputLabel>
               <Input
                 type={showPassword ? 'text' : 'password'}
-                onChange={(e)=>setPsw(e.target.value)}
-                value={psw}
+                onChange={(e)=>setPwd(e.target.value)}
+                value={pwd}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
