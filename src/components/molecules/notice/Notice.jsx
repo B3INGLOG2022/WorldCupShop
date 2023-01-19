@@ -35,11 +35,11 @@ export const Notice = ({globalRate, noticesList, ourNotice}) => {
 
     const fetchUsers = async () => {
         let usersList = [];
-        await noticesList.map((notice) => {
+        await noticesList?.map((notice) => {
             axios
-            .get('https://api.chec.io/v1/customers/'+notice.id_user, {headers: 'X-Authorization: '+process.env.REACT_APP_COMMERCEJS_SECRET_KEY})
+            .get('https://api.chec.io/v1/customers/'+notice?.id_user, {headers: 'X-Authorization: '+process.env.REACT_APP_COMMERCEJS_SECRET_KEY})
             .then((res) => {
-                usersList.push({'id_user':notice.id_user,'first_name':res.data.firstname, 'last_name':res.data.lastname})
+                usersList.push({'id_user':notice?.id_user,'first_name':res.data.firstname, 'last_name':res.data.lastname})
             }).finally((res) => {
                 setUsers(usersList);
             })

@@ -33,7 +33,7 @@ export const SignUp = (commerce) => {
     const [creationFailedDirectus, setCreationFailedDirectus] = useState(false);
     const [creationFailedCJS, setCreationFailedCJS] = useState(false);
     const [tokens, setTokens] = useState([]);
-    const [cstmrId, setCstmrId] = useState();
+    const [cstmrId, setCstmrId] = useState(null);
     const [userId, setUserId] = useState();
 
     const navigate = useNavigate();
@@ -45,15 +45,15 @@ export const SignUp = (commerce) => {
 
 
     // une fois connecté --> changement de page
-    const isLogged  = useSelector((state) => {
-    return state?.auth?.isLoggedIn
+    const cstmrIdListener  = useSelector((state) => {
+    return state?.auth?.cstmrId
     })
 
     useEffect(() => {
-        if (isLogged){
+        if (cstmrIdListener !== null){
             navigate("/")
         }
-    }, [isLogged]);
+    }, [cstmrIdListener]);
     //////////////////////////////////////
 
 
@@ -88,6 +88,8 @@ export const SignUp = (commerce) => {
             "Content-Type": "application/json"
         }})
         .then((res) => {
+            console.log("create directus ok")
+
             setUserId(res?.data?.data?.id)
             setCreationSuccessDirectus(true);
         })
@@ -96,6 +98,10 @@ export const SignUp = (commerce) => {
 
             if (err?.response?.data?.errors[0]?.message === 'Token expired.') {
                 toast.error('Token expiré', {
+                    position: toast.POSITION.BOTTOM_CENTER
+                })
+            } else if (err?.response?.data?.errors[0]?.message === 'Field "email" has to be unique.') {
+                toast.error('Compte déjà existant pour cette adresse mail', {
                     position: toast.POSITION.BOTTOM_CENTER
                 })
             } else {
@@ -117,7 +123,8 @@ export const SignUp = (commerce) => {
             "Content-Type": "application/json"
         }})
         .then(() => {
-            setCreationFailedCJS(false);
+            console.log("remove directus ok")
+            setCreationSuccessDirectus(false);
             setLoadingDirectus(false)
         })
         .catch((err) => {
@@ -151,6 +158,8 @@ export const SignUp = (commerce) => {
                 "Content-Type": "application/json"
             }})
             .then(() => {
+                console.log("create cjs ok")
+
                 setCreationSuccessCJS(true);
             })
             .catch((err) => {
@@ -167,8 +176,10 @@ export const SignUp = (commerce) => {
     // suupression du nouvel utilisateur sur commercejs
     const removeUserCommerceJs = async() => {
         await axios
-            .delete(process.env.REACT_APP_COMMERCEJS_URL+'customers',{headers: 'X-Authorization: '+process.env.REACT_APP_COMMERCEJS_SECRET_KEY})
+            .delete(process.env.REACT_APP_COMMERCEJS_URL+'customers/'+cstmrId,{headers: 'X-Authorization: '+process.env.REACT_APP_COMMERCEJS_SECRET_KEY})
             .then(() => {
+                console.log("remove cjs ok")
+
                 setCreationSuccessCJS(false);
                 setLoadingCommerceJs(false)
             })
@@ -177,9 +188,10 @@ export const SignUp = (commerce) => {
                 toast.error('Echec de connexion au serveur CommerceJs.', {
                     position: toast.POSITION.BOTTOM_CENTER
                 })
+                setCreationSuccessCJS(false);
                 setLoadingCommerceJs(false)
             })
-        setCstmrId(undefined);
+        setCstmrId(null);
     }
 
     // une fois l'utilisateur créé, connexion au nouveau compte
@@ -194,6 +206,7 @@ export const SignUp = (commerce) => {
             "Content-Type": "application/json"
         }})
         .then((res) => {
+            console.log("connect directus ok")
             setTokens([res?.data?.data?.access_token, res?.data?.data?.refresh_token]);
         })
         .catch((err) => {
@@ -239,10 +252,10 @@ export const SignUp = (commerce) => {
     } else if (creationSuccessDirectus && !!creationSuccessCJS && creationFailedCJS) {
         console.log("removeUserDirectus")
         removeUserDirectus();
-    } else if (!creationSuccessDirectus && creationSuccessCJS && creationFailedDirectus && cstmrId === undefined) {
+    } else if (!creationSuccessDirectus && creationSuccessCJS && creationFailedDirectus && cstmrId === null) {
         console.log("getIdCstmr")
         getCstmrsId();
-    } else if (!creationSuccessDirectus && creationSuccessCJS && creationFailedDirectus && cstmrId !== undefined) {
+    } else if (!creationSuccessDirectus && creationSuccessCJS && creationFailedDirectus && cstmrId !== null) {
         console.log("removeCstmr")
         removeUserCommerceJs();
     }
@@ -251,7 +264,7 @@ export const SignUp = (commerce) => {
 // si le nouveau compte est bien connecté sur Directus ET sur CommerceJs --> Login Success
   useEffect(() => {
     console.log(cstmrId, " - ", tokens)
-    if (cstmrId !== undefined && tokens !== [] && !creationFailedCJS && !creationFailedDirectus) {
+    if (cstmrId !== null && tokens !== [] && !creationFailedCJS && !creationFailedDirectus) {
       dispatch(login({email: email, token :tokens[0], refresh :tokens[1], cstmr_Id : cstmrId}));
       toast.success('Connexion réussite', {
         position: toast.POSITION.BOTTOM_CENTER

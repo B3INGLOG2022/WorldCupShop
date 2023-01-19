@@ -32,7 +32,6 @@ export const SearchBar = ({options, setSearchBarValue}) => {
             </div>
             <div className='searchBtn-productList'>
                 <SearchIcon onClick={()=>{
-                    console.log(searchValue);
                     setSearchBarValue(searchValue)}}/>
             </div>
         </StyledSearchBar>

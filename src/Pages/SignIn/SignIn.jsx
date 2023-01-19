@@ -20,25 +20,52 @@ import { Progress } from "../../components/atoms/Progress/Progress.jsx";
 export const SignIn = ({commerce}) => {
   
   const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [pwd, setPwd] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loadingDirectus, setLoadingDirectus] = useState(false);
   const [loadingCommerceJs, setLoadingCommerceJs] = useState(false);
   const [tokens, setTokens] = useState([]);
-  const [cstmrId, setCstmrId] = useState();
+  const [cstmrId, setCstmrId] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   // une fois connecté --> changement de page
-  const isLogged  = useSelector((state) => {
-    return state?.auth?.isLoggedIn
-  })
+  const cstmrIdListener  = useSelector((state) => {
+    return state?.auth?.cstmrId
+    })  
 
   useEffect(() => {
-      if (isLogged){
+      if (cstmrIdListener !== null){
           navigate("/")
+      } else {
+        if (cstmrId !== null && tokens !== []) {
+          dispatch(login({
+            email: email, 
+            token : tokens[0], 
+            refresh : tokens[1], 
+            cstmr_id : cstmrId,
+            first_name : firstName, 
+            last_name : lastName
+          }));
+          toast.success('Connexion réussite', {
+            position: toast.POSITION.BOTTOM_CENTER
+          })
+        } else if (localStorage.getItem("cstmrId") !== null) {
+          loadingDirectus(true)
+          loadingCommerceJs(true)
+          dispatch(login({
+            email: localStorage.getItem("email"), 
+            token :localStorage.getItem("access_token"), 
+            refresh :localStorage.getItem("refresh_token"), 
+            cstmr_id : localStorage.getItem("cstmrId"), 
+            first_name : localStorage.getItem("first_name"), 
+            last_name : localStorage.getItem("last_name")
+          }));
+        }
       }
-  }, [isLogged]);
+    }, [cstmrIdListener, cstmrId, tokens]);
     //////////////////////////////////////
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -80,12 +107,14 @@ export const SignIn = ({commerce}) => {
   }
   
   // récupération de l'id de l'utilisateur 
-  const getCstmrsId = async () => {
+  const getCstmrs = async () => {
     await axios
       .get(process.env.REACT_APP_COMMERCEJS_URL+'customers',{headers: 'X-Authorization: '+process.env.REACT_APP_COMMERCEJS_SECRET_KEY}, JSON.stringify({
         "query": email
       }))
       .then((res) => {
+        setFirstName(res?.data.data[0]?.firstname);
+        setLastName(res?.data.data[0]?.lastname);
         setCstmrId(res?.data.data[0]?.id);
       })
       .catch((err) => {
@@ -96,16 +125,13 @@ export const SignIn = ({commerce}) => {
         setLoadingCommerceJs(false)
       })
   }
-
-
+  
   useEffect(() => {
-    if (cstmrId !== undefined && tokens !== []) {
-      dispatch(login({email: email, token :tokens[0], refresh :tokens[1], cstmr_Id : cstmrId}));
-      toast.success('Connexion réussite', {
-        position: toast.POSITION.BOTTOM_CENTER
-      })
+    if (!loadingCommerceJs && !loadingCommerceJs) {
+      setCstmrId(null);
+      setTokens([]);
     } 
-  }, [cstmrId, tokens]);
+  }, [loadingCommerceJs, loadingDirectus]);
 
 
 
@@ -114,7 +140,7 @@ export const SignIn = ({commerce}) => {
     setLoadingCommerceJs(true)
     if (checkEmail()){
       await connectUserDirectus();
-      await getCstmrsId();
+      await getCstmrs();
     } else {
       toast.error('Email ou mot de passe invalide', {
         position: toast.POSITION.BOTTOM_CENTER

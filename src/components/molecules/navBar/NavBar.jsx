@@ -49,7 +49,7 @@ export default function Navbar({commerce}) {
     };
 
     const authSelector  = useSelector((state) => {
-        return state?.auth?.isLoggedIn
+        return state?.auth?.cstmrId
       })
 
     return (
@@ -94,7 +94,7 @@ export default function Navbar({commerce}) {
                                                 <ListItemText primary="Panier" sx={{color: "#AD0505"}}/>
                                         </Link>
                                     </li>
-                                    {(!authSelector)?
+                                    {(authSelector === null)?
                                     <li><Link to='/sign-in'>
                                                 <ListItemIcon>
                                                     <PersonIcon sx={{color: "#AD0505"}}/>
@@ -192,7 +192,7 @@ export default function Navbar({commerce}) {
                                     left: "50%", 
                                     transform: "translate(-50%, 0)"}}
                                 >
-                                    {(!authSelector)?
+                                    {(authSelector === null)?
                                         <>
                                             <Button onClick={handleSignUpClick} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#FFFFFF",color: "#AD0505"}}>S'inscrire</Button>
                                             <Button onClick={handleSignInClick} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#AD0505",color: "#FFFFFF"}}>Connexion</Button>
