@@ -8,7 +8,7 @@ const initialAuth = {
     email:localStorage.getItem("email")||'',
     token:localStorage.getItem("access_token")||'',
     refreshToken:localStorage.getItem("refresh_token")||'',    
-    admToken:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU1MjM4YzgxLTZmNzItNDZjYS05YTcyLTZkMDEyOGMwOWFlZCIsInJvbGUiOiIzOWVmNzFjYy1lNzFmLTQzODEtYWM3Ni0zM2UwNDFhMDY3ZDEiLCJhcHBfYWNjZXNzIjoxLCJhZG1pbl9hY2Nlc3MiOjEsImlhdCI6MTY3NDAwMjY4MywiZXhwIjoxNjc0MDAzNTgzLCJpc3MiOiJkaXJlY3R1cyJ9.8uzr9x2GZnrGlj-J_CYSqG0T4OSiPwIEO5Qqid7sZRE',
+    admToken:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU1MjM4YzgxLTZmNzItNDZjYS05YTcyLTZkMDEyOGMwOWFlZCIsInJvbGUiOiIzOWVmNzFjYy1lNzFmLTQzODEtYWM3Ni0zM2UwNDFhMDY3ZDEiLCJhcHBfYWNjZXNzIjoxLCJhZG1pbl9hY2Nlc3MiOjEsImlhdCI6MTY3NDEyNzQzNywiZXhwIjoxNjc0MTI4MzM3LCJpc3MiOiJkaXJlY3R1cyJ9._zM7iNFPXzWtpGiDjJXVCruiPSKVyqHJ2sXvTQZl1TA',
     cstmrId:localStorage.getItem("cstmrId")||'',
 }
 

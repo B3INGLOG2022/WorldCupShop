@@ -26,9 +26,15 @@ export const SignUp = (commerce) => {
     const [pwdVerify, setPwdVerify] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordVerify, setShowPasswordVerify] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loadingDirectus, setLoadingDirectus] = useState(false);
+    const [loadingCommerceJs, setLoadingCommerceJs] = useState(false);
+    const [creationSuccessDirectus, setCreationSuccessDirectus] = useState(false);
+    const [creationSuccessCJS, setCreationSuccessCJS] = useState(false);    
+    const [creationFailedDirectus, setCreationFailedDirectus] = useState(false);
+    const [creationFailedCJS, setCreationFailedCJS] = useState(false);
     const [tokens, setTokens] = useState([]);
-    const [cstmrId, setCstmrId] = useState("cstmr_A12JwrBegRwmmm"); // id pour debug
+    const [cstmrId, setCstmrId] = useState();
+    const [userId, setUserId] = useState();
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -66,14 +72,13 @@ export const SignUp = (commerce) => {
     const handleSignInClick = () => navigate("/sign-in");
 
     const checkEmail = () => /\S+@\S+\.\S+/.test(email);
-
     // création du nouvel utilisateur sur directus
     const createUserDirectus = async() => {
         await axios
         .post(process.env.REACT_APP_DIRECTUS_URL+'users',
         JSON.stringify({
-            firstName:firstName,
-            lastName:lastName,
+            first_name:firstName,
+            last_name:lastName,
             email:email,
             password:pwd,
             role:"adb00b00-b7f6-45ee-b671-8871fd17aa44",
@@ -82,45 +87,99 @@ export const SignUp = (commerce) => {
             "Authorization": "Bearer "+admTokenListener,
             "Content-Type": "application/json"
         }})
+        .then((res) => {
+            setUserId(res?.data?.data?.id)
+            setCreationSuccessDirectus(true);
+        })
+        .catch((err) => {
+            console.log(err) 
+
+            if (err?.response?.data?.errors[0]?.message === 'Token expired.') {
+                toast.error('Token expiré', {
+                    position: toast.POSITION.BOTTOM_CENTER
+                })
+            } else {
+                toast.error('Echec de connexion au serveur Directus.', {
+                    position: toast.POSITION.BOTTOM_CENTER
+                })
+            }
+            setCreationFailedDirectus(true);
+            setLoadingDirectus(false)
+        })
+    }
+    
+    // suppression du nouvel utilisateur sur directus
+    const removeUserDirectus = async() => {
+        await axios
+        .delete(process.env.REACT_APP_DIRECTUS_URL+'users/'+userId,{
+        "headers": {
+            "Authorization": "Bearer "+admTokenListener,
+            "Content-Type": "application/json"
+        }})
         .then(() => {
-            toast.success('Utilisateur Directus créé', {
-                position: toast.POSITION.BOTTOM_CENTER
-            })
+            setCreationFailedCJS(false);
+            setLoadingDirectus(false)
         })
         .catch((err) => {
             if (err?.response?.data?.errors[0]?.message === 'Token expired.') {
                 toast.error('Token expiré', {
                     position: toast.POSITION.BOTTOM_CENTER
-                    })
+                })
+            } else {
+                toast.error('Echec de connexion au serveur Directus.', {
+                    position: toast.POSITION.BOTTOM_CENTER
+                })
             }
+            setCreationFailedDirectus(false);
         })
+        setTokens([]);
     }
     
     // création du nouvel utilisateur sur commercejs
     const createUserCommerceJs = async() => {
-
         await axios
             .post(process.env.REACT_APP_COMMERCEJS_URL+'customers',
             JSON.stringify({
                 email: email,
-                phone: "",
                 firstname: firstName,
                 lastname: lastName,
+                phone: "",
                 external_id: ""
             }),{
             "headers": {
                 "X-Authorization": process.env.REACT_APP_COMMERCEJS_SECRET_KEY,    
                 "Content-Type": "application/json"
             }})
-            .then((res) => {
-                toast.success('Utilisateur CommerceJs créé', {
-                    position: toast.POSITION.BOTTOM_CENTER
-                })
-                connectUserDirectus();
+            .then(() => {
+                setCreationSuccessCJS(true);
             })
             .catch((err) => {
-    
+                console.log(err) 
+
+                toast.error('Echec de connexion au serveur CommerceJs.', {
+                    position: toast.POSITION.BOTTOM_CENTER
+                })
+                setCreationFailedCJS(true);
+                setLoadingCommerceJs(false);
             })
+    }
+
+    // suupression du nouvel utilisateur sur commercejs
+    const removeUserCommerceJs = async() => {
+        await axios
+            .delete(process.env.REACT_APP_COMMERCEJS_URL+'customers',{headers: 'X-Authorization: '+process.env.REACT_APP_COMMERCEJS_SECRET_KEY})
+            .then(() => {
+                setCreationSuccessCJS(false);
+                setLoadingCommerceJs(false)
+            })
+            .catch((err) => {
+                console.log(err)
+                toast.error('Echec de connexion au serveur CommerceJs.', {
+                    position: toast.POSITION.BOTTOM_CENTER
+                })
+                setLoadingCommerceJs(false)
+            })
+        setCstmrId(undefined);
     }
 
     // une fois l'utilisateur créé, connexion au nouveau compte
@@ -135,84 +194,107 @@ export const SignUp = (commerce) => {
             "Content-Type": "application/json"
         }})
         .then((res) => {
-            toast.success('Connexion réussite', {
-            position: toast.POSITION.BOTTOM_CENTER
-            })
-            console.log([res?.data?.data?.access_token, res?.data?.data?.refresh_token])
             setTokens([res?.data?.data?.access_token, res?.data?.data?.refresh_token]);
         })
         .catch((err) => {
+            toast.error('Echec de connexion au serveur Directus.', {
+                position: toast.POSITION.BOTTOM_CENTER
+            })
             console.log(err) 
+            setLoadingDirectus(false)
         })
     }
   
-  // récupération de l'id de l'utilisateur pour
-  // TODO erreur de reqete à corriger
-//   const getCstmrsId = async () => {
-//     await axios
-//       .get(process.env.REACT_APP_COMMERCEJS_URL+'customers',
-//         JSON.stringify({
-//           "query":"corentin.mailler@ynov.com",
-//         }),{
-//           headers: {
-//           "X-Authorization": "sk_test_49391ef22a406d71ffaae2a0ff96fe23556381e119d4d",
-//           "Content-Type": "application/json"
-//         }})
-//       .then((res) => {
-//         toast.success('Connexion réussite', {
-//           position: toast.POSITION.BOTTOM_CENTER
-//         })
-//         console.log(res)
-//         setCstmrId(res?.data[0]?.email);
-//       })
-//       .catch((err) => {
-//         console.log(err)  
-//       })
-//   }
+  // récupération de l'id COMMERCEJS de l'utilisateur
+    const getCstmrsId = async () => {
+        await axios
+        .get(process.env.REACT_APP_COMMERCEJS_URL+'customers',{headers: 'X-Authorization: '+process.env.REACT_APP_COMMERCEJS_SECRET_KEY}, JSON.stringify({
+            "query": email
+        }))
+        .then((res) => {
+            setCstmrId(res?.data.data[0]?.id);
+        })
+        .catch((err) => {
+            if (err?.code === "ERR_NETWORK"){
+                toast.error('Echec de connexion au serveur CommerceJs.', {
+                    position: toast.POSITION.BOTTOM_CENTER
+                })
+            } else {
+                toast.error('Echec de connexion au serveur CommerceJs.', {
+                    position: toast.POSITION.BOTTOM_CENTER
+                })
+            }
+            console.log(err)  
+            setLoadingCommerceJs(false)
+            
+        })
+    }
+
+  // si le nouveau compte est bien créé sure directus ET sur commerceJs --> les connecter
+  useEffect(() => {
+    if (creationSuccessDirectus && creationSuccessCJS) {
+        console.log("connect")
+        connectUserDirectus();
+        getCstmrsId();
+    } else if (creationSuccessDirectus && !!creationSuccessCJS && creationFailedCJS) {
+        console.log("removeUserDirectus")
+        removeUserDirectus();
+    } else if (!creationSuccessDirectus && creationSuccessCJS && creationFailedDirectus && cstmrId === undefined) {
+        console.log("getIdCstmr")
+        getCstmrsId();
+    } else if (!creationSuccessDirectus && creationSuccessCJS && creationFailedDirectus && cstmrId !== undefined) {
+        console.log("removeCstmr")
+        removeUserCommerceJs();
+    }
+  }, [creationSuccessDirectus, creationSuccessCJS, creationFailedCJS, creationFailedDirectus, cstmrId]);
+
+// si le nouveau compte est bien connecté sur Directus ET sur CommerceJs --> Login Success
+  useEffect(() => {
+    console.log(cstmrId, " - ", tokens)
+    if (cstmrId !== undefined && tokens !== [] && !creationFailedCJS && !creationFailedDirectus) {
+      dispatch(login({email: email, token :tokens[0], refresh :tokens[1], cstmr_Id : cstmrId}));
+      toast.success('Connexion réussite', {
+        position: toast.POSITION.BOTTOM_CENTER
+      })
+    } 
+  }, [cstmrId, tokens]);
 
     const handleSignUpClick = async() => {
-        setLoading(true)
+        setLoadingDirectus(true);
+        setLoadingCommerceJs(true);
+        setCreationFailedDirectus(false);
+        setCreationFailedCJS(false);
         if (pwd !== '' && firstName !== '' && lastName !== "" && pwdVerify !== ''){
             if (checkEmail()) {
                 if (pwd === pwdVerify) {
                         await createUserDirectus();
                         await createUserCommerceJs();
-                        await connectUserDirectus();
-                        //await getCstmrsId();
-                        console.log(cstmrId !== undefined && tokens !== [])
-                        if (cstmrId !== undefined && tokens !== []) {
-                            dispatch(login({email: email, token :tokens[0], refresh :tokens[1], cstmr_Id : cstmrId}));
-                        } else {
-                            setPwd('')
-                            setPwdVerify('')
-                            toast.error('Email ou mot de passe invalide', {
-                            position: toast.POSITION.BOTTOM_CENTER
-                            })
-                        }
-                        setLoading(false)
                 } else {
                     toast.error('Mot de passe invalid', {
                         position: toast.POSITION.BOTTOM_CENTER
                     })
-                    setLoading(false)
+                    setLoadingDirectus(false)
+                    setLoadingCommerceJs(false)
                 }
             } else {
                 toast.error('Email invalid', {
                   position: toast.POSITION.BOTTOM_CENTER
                 })
-                setLoading(false)
+                setLoadingDirectus(false)
+                setLoadingCommerceJs(false)
             }
         } else {
             toast.error('Des données sont manquantes', {
                 position: toast.POSITION.BOTTOM_CENTER
             })
-            setLoading(false)
+            setLoadingDirectus(false)
+            setLoadingCommerceJs(false)
         }
         
     };  
     
 
-    return loading ? (<Progress />):(
+    return(loadingDirectus || loadingCommerceJs) ? (<Progress />):(
         <StyledSignUp className="Register">
             <NavBar commerce={commerce}/>
             <div className="signup-body">
@@ -313,7 +395,7 @@ export const SignUp = (commerce) => {
                     </FormControl>
                 </div>  
                 <div className="signup-btns">
-                    <Button className="signup-btn-register" disabled={loading?true:false} onClick={handleSignUpClick} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#AD0505",color: "#FFFFFF"}}>Créer un compte</Button>
+                    <Button className="signup-btn-register" onClick={handleSignUpClick} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#AD0505",color: "#FFFFFF"}}>Créer un compte</Button>
                     <Button onClick={handleSignInClick} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#FFFFFF",color: "#AD0505"}}>Déjà membre</Button>
                 </div>    
                 <ToastContainer />

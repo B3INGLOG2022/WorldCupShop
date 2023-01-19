@@ -10,7 +10,6 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Home } from './Pages/Home/Home';
 import { SignUp } from './Pages/SignUp/SignUp';
 import { SignIn } from './Pages/SignIn/SignIn';
 import { ProductsPage } from './Pages/ProductsList/ProductsPage';
