@@ -38,21 +38,18 @@ export const DetailsProductPage = ({commerce}) => {
 
     const navigate = useNavigate();
     const params = useParams();
-
-    const authSelector  = useSelector((state) => {
-        return state?.auth?.isLoggedIn
-      })    
-      
-      // TODO à modifier quand le customerid sera récupéré correctement
-    // const cstmrIdSelector  = useSelector((state) => {
-    //     return state?.auth?.cstmrId
-    // })
     
+    //////////////////////////////////////
+    const cstmrIdListener  = useSelector((state) => {
+        return state?.auth?.cstmrId
+    })
+
     useEffect(() => {
-    if (!authSelector) {
-        navigate("/sign-in")
-    }
+        if (cstmrIdListener === null) {
+            navigate("/sign-in")
+        }
     }, [])
+    //////////////////////////////////////
 
     const fetchNotices = async () => {
         await axios
@@ -61,7 +58,7 @@ export const DetailsProductPage = ({commerce}) => {
                 getNoticesById(res.data)
             })
             .catch((err) => {
-                console.log(err)
+                navigate('/error');
             })
     }
 
@@ -115,7 +112,7 @@ export const DetailsProductPage = ({commerce}) => {
         cNotices.data.map((notice) => {
             if (notice.id_product === params?.id) {
                 noticesCatched.push(notice)
-                if (notice.id_user === "cstmr_A12JwrBegRwPjn"){ // changer cstmr_A12JwrBegRwPjn avec utilisateur connecté
+                if (notice.id_user === cstmrIdListener){ // changer cstmr_A12JwrBegRwPjn avec utilisateur connecté
                     ourNoticeCatched = notice;
                 }
             }

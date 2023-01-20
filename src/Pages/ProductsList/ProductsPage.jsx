@@ -25,17 +25,20 @@ export const ProductsPage = ({commerce}) => {
     const [sort, setSort] = useState(0) 
     const navigate = useNavigate();
 
-    const authSelector  = useSelector((state) => {
-        return state?.auth?.isLoggedIn
-      })
-    
-    useEffect(() => {
-        if (!authSelector) {
-            navigate("/sign-in")
-        }
-        fetchCategories();
-    }, [])
+    //////////////////////////////////////
+    const cstmrIdListener  = useSelector((state) => {
+        return state?.auth?.cstmrId
+    })
 
+    useEffect(() => {
+        if (cstmrIdListener === null) {
+            navigate("/sign-in")
+        } else {
+            fetchCategories();
+        }
+    }, [])
+    //////////////////////////////////////
+    
     // sort functions
     const sortByPriceDec = () => {
         productsFilters.sort((a, b) => b.price.raw - a.price.raw);
@@ -80,8 +83,7 @@ export const ProductsPage = ({commerce}) => {
             setProductsFilters(products.data);
             fetchNotices();
         }).catch((error) => {
-            // navigate('/error');
-            console.log(error)
+            navigate('/error');
         });
     }
 
@@ -98,8 +100,7 @@ export const ProductsPage = ({commerce}) => {
             setOptionsBrandFormated(allBrandsFormated)
             fetchProducts();
         }).catch((error) => {
-            // navigate('/error');
-            console.log(error)
+            navigate('/error');
         });
     }
 
@@ -139,7 +140,7 @@ export const ProductsPage = ({commerce}) => {
         let nbNotice = 0;
         let noticesCatched = [];
         let totalRating = 0;
-        notices.data.map((notice) => {
+        notices?.data?.map((notice) => {
             if (notice.id_product === id_product) {
                 noticesCatched.push(notice)
                 nbNotice ++;
@@ -188,7 +189,7 @@ export const ProductsPage = ({commerce}) => {
                 </div>
                 <div className='products-list-articles'>
                     {(productsFilters.length > 0)?
-                    productsFilters.map((product) => {
+                        productsFilters?.map((product) => {
                         let current_value_notice = getNoticesById(product.id);
                         return (
                             <div key={product.id} className="products-list-articles-item" onClick={() => navigate('/products/'+ product.id)}>
