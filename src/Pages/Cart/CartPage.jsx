@@ -59,6 +59,7 @@ export const CartPage = ({commerce}) => {
         await commerce.cart.retrieve()
         .then((cart) => {
             listItems = cart.line_items;
+            console.log(listItems)
             listItems.map((item) => dispatch(addItem({id: item.id, name:item.name, img: item.image.url, price :item?.price?.raw, stock: item.quantity, size: item.selected_options[0].option_name
             })))
         });

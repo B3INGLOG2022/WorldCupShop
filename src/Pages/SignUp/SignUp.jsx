@@ -379,7 +379,7 @@ export const SignUp = (commerce) => {
     };  
     
 
-    return(loadingDirectus || loadingCommerceJs || isConnecting) ? (<Progress />):(
+    return (loadingDirectus || loadingCommerceJs || isConnecting) ? (<Progress />):(
         <StyledSignUp className="Register">
             <NavBar commerce={commerce}/>
             <div className="signup-body">

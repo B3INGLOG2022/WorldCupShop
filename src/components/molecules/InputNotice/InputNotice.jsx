@@ -6,11 +6,12 @@ import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { refresh } from "../../../slices/auth_slice.js";
 
 export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, currentUserComment}) => {
 
@@ -18,10 +19,16 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
     const [title, setTitle] = useState((currentUserTitle && currentUserTitle) || "")
     const [message, setMessage] = useState((currentUserComment && currentUserComment) || "") //récupérer note de l'utilisateur sur l'article si existant
     const [sending, setSending] = useState(false)
+    const [neadRefresh,setNeadRefresh] = useState(false);
     const params = useParams();
+    const dispatch = useDispatch();
 
     const tokenSelector  = useSelector((state) => {
         return state?.auth?.token
+    })    
+    
+    const refreshSelector  = useSelector((state) => {
+        return state?.auth?.refreshToken
     })
     
     const cstmrIdSelector  = useSelector((state) => {
@@ -37,6 +44,38 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
                 position: toast.POSITION.BOTTOM_CENTER
             });
         }
+    }
+
+    useEffect(() => {
+        if (neadRefresh){
+            console.log("here")
+            setNeadRefresh(false);
+            sendNotices();
+        }
+    }, [tokenSelector]);
+    
+
+    const refreshCurrentToken = async () => {
+        console.log("refreshSelector ", refreshSelector)
+        await axios
+            .post(process.env.REACT_APP_DIRECTUS_URL+'auth/refresh',
+                JSON.stringify({
+                    refresh_token:refreshSelector,
+                    mode:'json'
+                }),{
+                    "headers": {
+                    "Content-Type": "application/json"
+                }}
+            ).then((res) => {
+                console.log(res)
+                dispatch(refresh({
+                    "token" : res?.data?.data?.access_token,
+                    "refresh" : res?.data?.data?.refresh_token
+                  }));
+            })
+            .catch((err) => {
+                console.log(err);
+            })
     }
 
     const sendNotices = async() => {
@@ -55,15 +94,16 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
                     }
                 )
                 .then(()=>{
-                    // toast.success('Merci pour votre retour !', {
-                    //     position: toast.POSITION.BOTTOM_CENTER
-                    // })
                     setSending(false)
                 })
                 .finally(() => {
                     window.location.reload(false);
                 })
                 .catch((err) => {
+                    if (err?.response?.data?.errors[0]?.message === 'Token expired.' || err?.response?.data?.errors[0]?.message === 'Invalid user credentials.') {
+                        refreshCurrentToken()
+                        setNeadRefresh(true);
+                    }
                     toast.error('Echec de l\'envoie de votre avis !', {
                         position: toast.POSITION.BOTTOM_CENTER
                     })
@@ -87,9 +127,6 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
                     }
                 },)
                 .then(() => {
-                    // toast.success('Merci pour votre retour !', {
-                    //     position: toast.POSITION.BOTTOM_CENTER
-                    // })
                     setSending(false)
                 })
                 .finally(()=>{

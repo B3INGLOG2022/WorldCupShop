@@ -33,7 +33,6 @@ export const CartItemProduct = ({item, commerce}) => {
 
   return (
     <StyledCartItemProduct>
-        <StyledCartItemProduct>
             <Card className='cart-product-item-card' sx={{backgroundColor: "#F6F3F0"}}>
                 <div className='cart-product-item-img'>
                   <img src={item?.image?.url} alt="article" />
@@ -56,7 +55,6 @@ export const CartItemProduct = ({item, commerce}) => {
                 </div>
                 
             </Card>
-        </StyledCartItemProduct>
     </StyledCartItemProduct>
   )
 

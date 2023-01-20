@@ -1,6 +1,5 @@
 
 import { createSlice } from "@reduxjs/toolkit"
-import axios from "axios";
 
 const initialAuth = {
     lastName: localStorage.getItem("last_name"),
@@ -51,18 +50,10 @@ export const authSlice = createSlice(
             },
             refresh: (state, action) => {
                 console.log("refresh ok")
-                axios
-                    .post(process.env.REACT_APP_DIRECTUS_URL+'auth/refresh',
-                    JSON.stringify({
-                        refresh_token:state.refreshToken,
-                        mode:'json'
-                    }),{
-                        "headers": {
-                        "Content-Type": "application/json"
-                    }}).then((res) => {
-                        state.token = res?.data?.access_token;
-                        state.refreshToken = res?.data?.refresh_token;
-                    })
+                state.token = action.payload.token;
+                state.refreshToken = action.payload.refresh;
+                localStorage.setItem("access_token", action.payload.token);
+                localStorage.setItem("refresh_token", action.payload.refresh);
                 return state;
             },
             refresh_admin: (state, action) => {
