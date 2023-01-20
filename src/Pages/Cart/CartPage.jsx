@@ -8,6 +8,10 @@ import { Progress } from '../../components/atoms/Progress/Progress.jsx';
 import { useSelector, useDispatch} from 'react-redux'
 import { addItem } from "../../slices/cart_slice";
 import { useNavigate } from 'react-router-dom';
+import emailjs from '@emailjs/browser';
+import {  toast } from 'react-toastify';
+
+
 
 
 export const CartPage = ({commerce}) => { 
@@ -65,19 +69,40 @@ export const CartPage = ({commerce}) => {
         fetchCart();
     }, []);
 
+    const sendEmail = () => { 
+        console.log(cartItemsListSelector.map(item => console.log("try",item.selected_options[0])))
+        emailjs.send("react_contact_detail","cart_page_template",{
+            article: cartItemsListSelector.map(item => item.id),
+            prix_article: cartItemsListSelector.map(item => item.price),
+            quantite: cartItemsListSelector.map(item => item.stock),
+            //taille: cartItemsListSelector.map(item => item.selected_options[0].option_name),
+            prix_total: cartFinalPriceSelector,
+            },"Y3hWXStduBjejVOni" ) 
+        .then(
+                (result) => { 
+                    toast.success('Mail envoyé', {position: toast.POSITION.BOTTOM_CENTER}); 
+                    handleSendMail() 
+                },
+                (error) => { 
+                    navigate("/error");
+                } 
+        );
+     };
+
     const handleSendMail = () => {
         commerce.cart.delete();
         navigate("/thanks");
     }
 
     const validateCart = () => {
-        console.log('envoie du mail recap ici')
-        handleSendMail() 
+        sendEmail();
+        handleSendMail() ;
     }
 
     return isLoading ? (<Progress />) : (
         <>
-            <NavBar commerce={commerce}/>
+            <NavBar commerce={commerce} />
+
             <StyledCart>
                 <h2>Récapitulatif de mon panier</h2>
                 {(items.length > 0) ? items.map(item => {

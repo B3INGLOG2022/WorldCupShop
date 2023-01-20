@@ -50,14 +50,14 @@ export const ContactPage = ({commerce}) => {
                     label="Nom et Prénom"
                     type="text"
                     name="user_name"
-                    required="required"
+                    required
                 />
                 <TextField  
                     className="section-user-mail"
                     label="Mail"
                     type="email"
                     name="user_email"
-                    required="required"
+                    required
                 />
                 <TextField
                     className="section-user-comment"
@@ -65,7 +65,7 @@ export const ContactPage = ({commerce}) => {
                     placeholder="Ecrivez votre commentaire"
                     type="text"
                     name="message"
-                    required="required"
+                    required
                     multiline
                 />
 
