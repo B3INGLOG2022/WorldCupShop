@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {StyledSignIn} from "./style.js"
 import { useNavigate } from "react-router-dom";
 import NavBar from '../../components/molecules/navBar/NavBar.jsx';
@@ -12,13 +12,72 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { ToastContainer, toast } from 'react-toastify';
 import Button from "@mui/material/Button";
 import { Typography } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { login } from "../../slices/auth_slice";
+import { Progress } from "../../components/atoms/Progress/Progress.jsx";
 
-export const SignIn = () => {
+export const SignIn = ({commerce}) => {
   
   const [email, setEmail] = useState('');
-  const [psw, setPsw] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [pwd, setPwd] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loadingDirectus, setLoadingDirectus] = useState(false);
+  const [loadingCommerceJs, setLoadingCommerceJs] = useState(false);
+  const [tokens, setTokens] = useState([]);
+  const [cstmrId, setCstmrId] = useState(null);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const cstmrIdListener  = useSelector((state) => {
+    return state?.auth?.cstmrId
+  })  
+
+  const tokenListener  = useSelector((state) => {
+    return state?.auth?.token
+  })
+
+    // une fois connecté --> changement de page
+  useEffect(() => {
+      if ((cstmrIdListener !== undefined && cstmrIdListener !== null) && (tokenListener !== undefined && tokenListener !== null)){
+          navigate("/")
+      } else {
+        if (cstmrId !== null && tokens !== []) {
+          if (tokens[0] !== undefined && tokens[1] !== undefined){
+            dispatch(login({
+              email: email, 
+              token : tokens[0], 
+              refresh : tokens[1], 
+              cstmr_id : cstmrId,
+              first_name : firstName, 
+              last_name : lastName
+            }));
+            toast.success('Connexion réussite', {
+              position: toast.POSITION.BOTTOM_CENTER
+            })
+          } else {
+            setCstmrId(null);
+            setTokens([]);
+          }
+          
+        // } else if (localStorage.getItem("cstmrId") !== null) {
+        //   console.log("here")
+        //   loadingDirectus(true)
+        //   loadingCommerceJs(true)
+        //   dispatch(login({
+        //     email: localStorage.getItem("email"), 
+        //     token :localStorage.getItem("access_token"), 
+        //     refresh :localStorage.getItem("refresh_token"), 
+        //     cstmr_id : localStorage.getItem("cstmrId"), 
+        //     first_name : localStorage.getItem("first_name"), 
+        //     last_name : localStorage.getItem("last_name")
+        //   }));
+        }
+      }
+    }, [cstmrIdListener, tokenListener, cstmrId, tokens]);
+    //////////////////////////////////////
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -28,25 +87,90 @@ export const SignIn = () => {
 
   const checkEmail = () => /\S+@\S+\.\S+/.test(email);
 
-  const handleSignInClick = () => {
-    if (checkEmail() && psw !== ''){
-      toast.success('Connexion fictive réussite', {
-        position: toast.POSITION.BOTTOM_CENTER
+  const handleSignUpClick = () => navigate("/sign-up");
+
+  // connexion au compte directus + recuperation des tokens
+  const connectUserDirectus = async () => {
+    await axios
+      .post(process.env.REACT_APP_DIRECTUS_URL+'auth/login',
+      JSON.stringify({
+        email:email,
+        password:pwd
+      }),{
+        "headers": {
+        "Content-Type": "application/json"
+      }})
+      .then((res) => {
+        setTokens([res?.data?.data?.access_token, res?.data?.data?.refresh_token]);
       })
+      .catch((err) => {
+        if (err?.response?.data?.errors[0]?.message === 'Invalid user credentials.') {
+          toast.error('Email ou mot de passe invalide', {
+            position: toast.POSITION.BOTTOM_CENTER
+          })
+        } else {
+          toast.error('Echec de connexion aux serveurs Directus.', {
+            position: toast.POSITION.BOTTOM_CENTER
+          })
+        }
+        setLoadingDirectus(false)
+        setPwd('');
+      })
+  }
+  
+  // récupération de l'id de l'utilisateur 
+  const getCstmrs = async () => {
+    await axios
+      .get(process.env.REACT_APP_COMMERCEJS_URL+'customers',{headers: 'X-Authorization: '+process.env.REACT_APP_COMMERCEJS_SECRET_KEY})
+      .then((res) => {
+        res?.data?.data.find((user) => {
+          if (user?.email === email) {
+            setFirstName(user?.firstname);
+            setLastName(user?.lastname);
+            setCstmrId(user?.id);
+          }
+        })
+      })
+      .catch((err) => {
+        toast.error('Echec de connexion aux serveurs CommerceJs.', {
+          position: toast.POSITION.BOTTOM_CENTER
+        })
+        console.log(err)  
+        setPwd('');
+        setLoadingCommerceJs(false)
+      })
+  }
+  
+  useEffect(() => {
+    if (!loadingCommerceJs && !loadingCommerceJs) {
+      setCstmrId(null);
+      setTokens([]);
+    } 
+  }, [loadingCommerceJs, loadingDirectus]);
+
+
+
+  const handleSignInClick = async() => {
+    setLoadingDirectus(true)
+    setLoadingCommerceJs(true)
+    if (checkEmail()){
+      await connectUserDirectus();
+      await getCstmrs();
     } else {
       toast.error('Email ou mot de passe invalide', {
         position: toast.POSITION.BOTTOM_CENTER
       })
+      setPwd('')
+      setLoadingDirectus(false)
+      setLoadingCommerceJs(false)
     }
     
   };  
   
-  const handleSignUpClick = () => navigate("/sign-up");
-  
-  return (
+  return (loadingDirectus && loadingCommerceJs) ? (<Progress />):(
 
     <StyledSignIn className="Login">
-      <NavBar />
+      <NavBar commerce={commerce}/>
       <div className="signin-body">
         <h2>Connectez-vous</h2>
         <div className="signin-email">
@@ -73,8 +197,8 @@ export const SignIn = () => {
               </InputLabel>
               <Input
                 type={showPassword ? 'text' : 'password'}
-                onChange={(e)=>setPsw(e.target.value)}
-                value={psw}
+                onChange={(e)=>setPwd(e.target.value)}
+                value={pwd}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton

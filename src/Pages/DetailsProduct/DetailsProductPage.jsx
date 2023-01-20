@@ -23,6 +23,7 @@ import { Notice } from "../../components/molecules/notice/Notice.jsx";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom';
 import { Progress } from "../../components/atoms/Progress/Progress.jsx";
+import { useSelector } from "react-redux";
 
 export const DetailsProductPage = ({commerce}) => { 
 
@@ -37,15 +38,27 @@ export const DetailsProductPage = ({commerce}) => {
 
     const navigate = useNavigate();
     const params = useParams();
+    
+    //////////////////////////////////////
+    const cstmrIdListener  = useSelector((state) => {
+        return state?.auth?.cstmrId
+    })
+
+    useEffect(() => {
+        if (cstmrIdListener === null) {
+            navigate("/sign-in")
+        }
+    }, [])
+    //////////////////////////////////////
 
     const fetchNotices = async () => {
         await axios
-            .get(process.env.REACT_APP_DIRECTUS_URL+'/items/notice')
+            .get(process.env.REACT_APP_DIRECTUS_URL+'items/notice')
             .then((res) => {
                 getNoticesById(res.data)
             })
             .catch((err) => {
-                console.log(err)
+                navigate('/error');
             })
     }
 
@@ -99,7 +112,7 @@ export const DetailsProductPage = ({commerce}) => {
         cNotices.data.map((notice) => {
             if (notice.id_product === params?.id) {
                 noticesCatched.push(notice)
-                if (notice.id_user === "cstmr_A12JwrBegRwPjn"){ // changer cstmr_A12JwrBegRwPjn avec utilisateur connecté
+                if (notice.id_user === cstmrIdListener){ // changer cstmr_A12JwrBegRwPjn avec utilisateur connecté
                     ourNoticeCatched = notice;
                 }
             }
@@ -113,7 +126,7 @@ export const DetailsProductPage = ({commerce}) => {
 
     return isLoading ? (<Progress />) : (
         <>
-            <NavBar />
+            <NavBar commerce={commerce}/>
             <StyledDetailsProduct>
                 <div className="product-header">
                     <Link to={"/products"}>

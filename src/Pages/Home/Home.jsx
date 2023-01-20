@@ -6,7 +6,7 @@ export const Home = ({commerce}) => {
 
     return (
         <>
-            <NavBar />
+            <NavBar commerce={commerce}/>
             <StyledHome>
                 HELLO WORLD !
             </StyledHome>

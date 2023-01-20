@@ -10,6 +10,7 @@ import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ScrollUp } from '../../components/atoms/ScrollUp/ScrollUp.jsx';
+import { useSelector } from 'react-redux';
 
 
 export const ProductsPage = ({commerce}) => { 
@@ -24,6 +25,20 @@ export const ProductsPage = ({commerce}) => {
     const [sort, setSort] = useState(0) 
     const navigate = useNavigate();
 
+    //////////////////////////////////////
+    const cstmrIdListener  = useSelector((state) => {
+        return state?.auth?.cstmrId
+    })
+
+    useEffect(() => {
+        if (cstmrIdListener === null) {
+            navigate("/sign-in")
+        } else {
+            fetchCategories();
+        }
+    }, [])
+    //////////////////////////////////////
+    
     // sort functions
     const sortByPriceDec = () => {
         productsFilters.sort((a, b) => b.price.raw - a.price.raw);
@@ -51,7 +66,7 @@ export const ProductsPage = ({commerce}) => {
     // fetch functions
     const fetchNotices = async () => {
         await axios
-            .get(process.env.REACT_APP_DIRECTUS_URL+'/items/notice')
+            .get(process.env.REACT_APP_DIRECTUS_URL+'items/notice')
             .then((res) => {
                 setNotices(res.data)
                 setIsLoading(false);
@@ -62,14 +77,13 @@ export const ProductsPage = ({commerce}) => {
             })
     }
 
-    const fetchProducts = async(selectedBrands) => {
+    const fetchProducts = async() => {
         await commerce.products.list().then((products) => {
             setProducts(products.data);
             setProductsFilters(products.data);
             fetchNotices();
         }).catch((error) => {
-            // navigate('/error');
-            console.log(error)
+            navigate('/error');
         });
     }
 
@@ -84,16 +98,11 @@ export const ProductsPage = ({commerce}) => {
             });
             setDataBrandFormated(allBrandsFormated);
             setOptionsBrandFormated(allBrandsFormated)
-            fetchProducts(allBrands);
+            fetchProducts();
         }).catch((error) => {
-            // navigate('/error');
-            console.log(error)
+            navigate('/error');
         });
     }
-
-    useEffect(() => {
-        fetchCategories();
-    }, []);
 
     useEffect(() => {
         if (!isLoading){
@@ -131,7 +140,7 @@ export const ProductsPage = ({commerce}) => {
         let nbNotice = 0;
         let noticesCatched = [];
         let totalRating = 0;
-        notices.data.map((notice) => {
+        notices?.data?.map((notice) => {
             if (notice.id_product === id_product) {
                 noticesCatched.push(notice)
                 nbNotice ++;
@@ -143,7 +152,7 @@ export const ProductsPage = ({commerce}) => {
 
     return (isLoading === true) ? (<Progress />) : (
         <>
-            <NavBar id="top"/>
+            <NavBar id="top" commerce={commerce}/>
             <StyledProductsList>
                 <div className='products-list-header'>
                     <SearchBar options={products} setSearchBarValue={setSearchBarValue}/>
@@ -180,7 +189,7 @@ export const ProductsPage = ({commerce}) => {
                 </div>
                 <div className='products-list-articles'>
                     {(productsFilters.length > 0)?
-                    productsFilters.map((product) => {
+                        productsFilters?.map((product) => {
                         let current_value_notice = getNoticesById(product.id);
                         return (
                             <div key={product.id} className="products-list-articles-item" onClick={() => navigate('/products/'+ product.id)}>

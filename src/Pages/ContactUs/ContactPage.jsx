@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import NavBar from '../../components/molecules/navBar/NavBar.jsx';
 
 
-export const ContactPage = () => { 
+export const ContactPage = ({commerce}) => { 
 
     const form = useRef(); 
     const navigate = useNavigate();
@@ -36,7 +36,7 @@ export const ContactPage = () => {
 
     return (
         <>
-        <NavBar />
+        <NavBar commerce={commerce}/>
         <StyledContactUs>
         <Link to={"/"}>
                     

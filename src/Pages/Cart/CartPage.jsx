@@ -6,7 +6,7 @@ import { Button } from '@mui/material';
 import { useEffect } from 'react';
 import { Progress } from '../../components/atoms/Progress/Progress.jsx';
 import { useSelector, useDispatch} from 'react-redux'
-import { addItem } from "../../store/index.js";
+import { addItem } from "../../slices/cart_slice";
 import { useNavigate } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
 import {  toast } from 'react-toastify';
@@ -29,20 +29,17 @@ export const CartPage = ({commerce}) => {
         return state.cart.listItems
     })
 
-    const isLogged  = useSelector((state) => {
-        return state?.auth?.isLoggedIn
+    //////////////////////////////////////
+    const cstmrIdListener  = useSelector((state) => {
+        return state?.auth?.cstmrId
     })
-    
-    /*useEffect(() => {
-        if (!isLogged){
-            navigate("/sign-in");
-        }
-    }, [isLogged]);*/
 
-    
     useEffect(() => {
-        console.log('Price', cartFinalPriceSelector);
-    }, [cartFinalPriceSelector])
+        if (cstmrIdListener === null) {
+            navigate("/sign-in")
+        }
+    }, [])
+    //////////////////////////////////////
     
     useEffect(() => {
         if (items.length > 0) {
@@ -105,6 +102,7 @@ export const CartPage = ({commerce}) => {
     return isLoading ? (<Progress />) : (
         <>
             <NavBar commerce={commerce} />
+
             <StyledCart>
                 <h2>Récapitulatif de mon panier</h2>
                 {(items.length > 0) ? items.map(item => {

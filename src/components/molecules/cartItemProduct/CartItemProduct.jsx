@@ -4,7 +4,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useState } from "react";
 import { Stock } from "../../atoms/Stock/Stock.jsx";
 import { useDispatch } from "react-redux";
-import { addItemStock,removeItemStock, deleteItem } from "../../../store/index.js";
+import { addItemStock,removeItemStock, deleteItem } from "../../../slices/cart_slice";
 
 export const CartItemProduct = ({item, commerce}) => {
 
