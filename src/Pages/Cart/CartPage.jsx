@@ -5,10 +5,13 @@ import { CartItemProduct } from '../../components/molecules/cartItemProduct/Cart
 import { Button } from '@mui/material';
 import { useEffect } from 'react';
 import { Progress } from '../../components/atoms/Progress/Progress.jsx';
-import { useSelector} from 'react-redux'
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch} from 'react-redux'
 import { addItem } from "../../store/index.js";
 import { useNavigate } from 'react-router-dom';
+import emailjs from '@emailjs/browser';
+import {  toast } from 'react-toastify';
+
+
 
 
 export const CartPage = ({commerce}) => { 
@@ -26,6 +29,17 @@ export const CartPage = ({commerce}) => {
         return state.cart.listItems
     })
 
+    const isLogged  = useSelector((state) => {
+        return state?.auth?.isLoggedIn
+    })
+    
+    /*useEffect(() => {
+        if (!isLogged){
+            navigate("/sign-in");
+        }
+    }, [isLogged]);*/
+
+    
     useEffect(() => {
         console.log('Price', cartFinalPriceSelector);
     }, [cartFinalPriceSelector])
@@ -47,7 +61,8 @@ export const CartPage = ({commerce}) => {
         await commerce.cart.retrieve()
         .then((cart) => {
             listItems = cart.line_items;
-            listItems.map((item) => dispatch(addItem({id: item.id, price :item?.price?.raw, stock: item.quantity})))
+            listItems.map((item) => dispatch(addItem({id: item.id, price :item?.price?.raw, stock: item.quantity, size: item.selected_options[0].option_name
+            })))
         });
         setIsLoading(false);
         setItems(listItems);
@@ -57,19 +72,39 @@ export const CartPage = ({commerce}) => {
         fetchCart();
     }, []);
 
+    const sendEmail = () => { 
+        console.log(cartItemsListSelector.map(item => console.log("try",item.selected_options[0])))
+        emailjs.send("react_contact_detail","cart_page_template",{
+            article: cartItemsListSelector.map(item => item.id),
+            prix_article: cartItemsListSelector.map(item => item.price),
+            quantite: cartItemsListSelector.map(item => item.stock),
+            //taille: cartItemsListSelector.map(item => item.selected_options[0].option_name),
+            prix_total: cartFinalPriceSelector,
+            },"Y3hWXStduBjejVOni" ) 
+        .then(
+                (result) => { 
+                    toast.success('Mail envoyé', {position: toast.POSITION.BOTTOM_CENTER}); 
+                    handleSendMail() 
+                },
+                (error) => { 
+                    navigate("/error");
+                } 
+        );
+     };
+
     const handleSendMail = () => {
         commerce.cart.delete();
         navigate("/thanks");
     }
 
     const validateCart = () => {
-        console.log('envoie du mail recap ici')
-        handleSendMail() 
+        sendEmail();
+        handleSendMail() ;
     }
 
     return isLoading ? (<Progress />) : (
         <>
-            <NavBar />
+            <NavBar commerce={commerce} />
             <StyledCart>
                 <h2>Récapitulatif de mon panier</h2>
                 {(items.length > 0) ? items.map(item => {
