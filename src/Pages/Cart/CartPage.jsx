@@ -25,20 +25,17 @@ export const CartPage = ({commerce}) => {
         return state.cart.listItems
     })
 
-    const isLogged  = useSelector((state) => {
-        return state?.auth?.isLoggedIn
+    //////////////////////////////////////
+    const cstmrIdListener  = useSelector((state) => {
+        return state?.auth?.cstmrId
     })
 
     useEffect(() => {
-        if (!isLogged){
-            navigate("/sign-in");
+        if (cstmrIdListener === null) {
+            navigate("/sign-in")
         }
-    }, [isLogged]);
-    
-
-    useEffect(() => {
-        console.log('Price', cartFinalPriceSelector);
-    }, [cartFinalPriceSelector])
+    }, [])
+    //////////////////////////////////////
     
     useEffect(() => {
         if (items.length > 0) {

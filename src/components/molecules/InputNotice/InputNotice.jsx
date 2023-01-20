@@ -9,7 +9,7 @@ import CardContent from '@mui/material/CardContent';
 import { useState } from "react";
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, currentUserComment}) => {
@@ -18,7 +18,6 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
     const [title, setTitle] = useState((currentUserTitle && currentUserTitle) || "")
     const [message, setMessage] = useState((currentUserComment && currentUserComment) || "") //récupérer note de l'utilisateur sur l'article si existant
     const [sending, setSending] = useState(false)
-    const navigate = useNavigate();
     const params = useParams();
 
     const tokenSelector  = useSelector((state) => {
@@ -55,12 +54,14 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
                         },
                     }
                 )
-                .finally(() => {
-                    toast.success('Merci pour votre retour !', {
-                        position: toast.POSITION.BOTTOM_CENTER
-                    })
+                .then(()=>{
+                    // toast.success('Merci pour votre retour !', {
+                    //     position: toast.POSITION.BOTTOM_CENTER
+                    // })
                     setSending(false)
-                    navigate('/products/'+params?.id);
+                })
+                .finally(() => {
+                    window.location.reload(false);
                 })
                 .catch((err) => {
                     toast.error('Echec de l\'envoie de votre avis !', {
@@ -86,11 +87,13 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
                     }
                 },)
                 .then(() => {
-                    toast.success('Merci pour votre retour !', {
-                        position: toast.POSITION.BOTTOM_CENTER
-                    })
+                    // toast.success('Merci pour votre retour !', {
+                    //     position: toast.POSITION.BOTTOM_CENTER
+                    // })
                     setSending(false)
-                    navigate('/products/'+params?.id);
+                })
+                .finally(()=>{
+                    window.location.reload(false);
                 })
                 .catch((err) => {
                     toast.error('Echec de l\'envoie de votre avis !', {

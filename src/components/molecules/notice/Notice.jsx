@@ -79,7 +79,7 @@ export const Notice = ({globalRate, noticesList, ourNotice}) => {
                 <div className="section-rating-body-list">
                     {noticesList.map((notice,key) => {
                         let currentUser = users.find(user => user.id_user === notice.id_user);
-                        return (<FeedBack key={key} notice={notice} username={((currentUser?.first_name)&&(currentUser?.first_name)) + ' ' + ((currentUser?.last_name)&&(currentUser?.last_name))} rate={notice?.note} title={(notice?.Title)} comment={(notice?.Content)} date={notice.date_updated}/>)
+                        return (<FeedBack key={key} notice={notice} username={((currentUser?.first_name)&&(currentUser?.first_name)) + ' ' + ((currentUser?.last_name)&&(currentUser?.last_name))} rate={notice?.note} title={(notice?.Title)} comment={(notice?.Content)} date={(notice.date_updated !== null) ? notice.date_updated : notice.date_created}/>)
                     })}
                 </div>
             </div>

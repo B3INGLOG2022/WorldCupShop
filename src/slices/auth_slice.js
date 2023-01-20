@@ -4,12 +4,12 @@ import axios from "axios";
 
 const initialAuth = {
     lastName: localStorage.getItem("last_name"),
-    firstName: localStorage.getItem("first_name"),
-    email:localStorage.getItem("email"),
-    token:localStorage.getItem("access_token"),
-    refreshToken:localStorage.getItem("refresh_token"),    
-    cstmrId:localStorage.getItem("cstmr_id"),
-    admToken:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU1MjM4YzgxLTZmNzItNDZjYS05YTcyLTZkMDEyOGMwOWFlZCIsInJvbGUiOiIzOWVmNzFjYy1lNzFmLTQzODEtYWM3Ni0zM2UwNDFhMDY3ZDEiLCJhcHBfYWNjZXNzIjoxLCJhZG1pbl9hY2Nlc3MiOjEsImlhdCI6MTY3NDEzMzIyMCwiZXhwIjoxNjc0MTM0MTIwLCJpc3MiOiJkaXJlY3R1cyJ9.yfKvQD0sJ1g89Pw_ZyQ2CkifLxBYApu7_bAmjsBxsVk',
+    firstName: localStorage.getItem("first_name"), 
+    email:localStorage.getItem("email"), 
+    token:localStorage.getItem("access_token"), 
+    refreshToken:localStorage.getItem("refresh_token"),   
+    cstmrId:localStorage.getItem("cstmr_id"), 
+    admToken:localStorage.getItem("adm_token"),
 }
 
 export const authSlice = createSlice(
@@ -49,9 +49,9 @@ export const authSlice = createSlice(
                 localStorage.removeItem("cstmr_id");
                 return state;   
             },
-            refresh: async (state, action) => {
+            refresh: (state, action) => {
                 console.log("refresh ok")
-                await axios
+                axios
                     .post(process.env.REACT_APP_DIRECTUS_URL+'auth/refresh',
                     JSON.stringify({
                         refresh_token:state.refreshToken,
@@ -65,19 +65,10 @@ export const authSlice = createSlice(
                     })
                 return state;
             },
-            refresh_admin: async (state, action) => {
+            refresh_admin: (state, action) => {
                 console.log("refresh ok")
-                await axios
-                    .post(process.env.REACT_APP_DIRECTUS_URL+'auth/login',
-                    JSON.stringify({
-                        email: "admin@example.com",
-                        password: "password"
-                    }),{
-                        "headers": {
-                        "Content-Type": "application/json"
-                    }}).then((res) => {
-                        state.admToken = res?.data?.access_token;
-                    })
+                state.admToken = action.payload.adm_token;
+                localStorage.setItem("adm_token", action.payload.adm_token);
                 return state;
             },
         }
@@ -88,5 +79,7 @@ export const authSlice = createSlice(
 export const {
     login,
     logout,
-    refresh
+    refresh,
+    refresh_admin,
+    load_adm
 } = authSlice.actions

@@ -31,41 +31,52 @@ export const SignIn = ({commerce}) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // une fois connecté --> changement de page
   const cstmrIdListener  = useSelector((state) => {
     return state?.auth?.cstmrId
-    })  
+  })  
 
+  const tokenListener  = useSelector((state) => {
+    return state?.auth?.token
+  })
+
+    // une fois connecté --> changement de page
   useEffect(() => {
-      if (cstmrIdListener !== null){
+      if ((cstmrIdListener !== undefined && cstmrIdListener !== null) && (tokenListener !== undefined && tokenListener !== null)){
           navigate("/")
       } else {
         if (cstmrId !== null && tokens !== []) {
-          dispatch(login({
-            email: email, 
-            token : tokens[0], 
-            refresh : tokens[1], 
-            cstmr_id : cstmrId,
-            first_name : firstName, 
-            last_name : lastName
-          }));
-          toast.success('Connexion réussite', {
-            position: toast.POSITION.BOTTOM_CENTER
-          })
-        } else if (localStorage.getItem("cstmrId") !== null) {
-          loadingDirectus(true)
-          loadingCommerceJs(true)
-          dispatch(login({
-            email: localStorage.getItem("email"), 
-            token :localStorage.getItem("access_token"), 
-            refresh :localStorage.getItem("refresh_token"), 
-            cstmr_id : localStorage.getItem("cstmrId"), 
-            first_name : localStorage.getItem("first_name"), 
-            last_name : localStorage.getItem("last_name")
-          }));
+          if (tokens[0] !== undefined && tokens[1] !== undefined){
+            dispatch(login({
+              email: email, 
+              token : tokens[0], 
+              refresh : tokens[1], 
+              cstmr_id : cstmrId,
+              first_name : firstName, 
+              last_name : lastName
+            }));
+            toast.success('Connexion réussite', {
+              position: toast.POSITION.BOTTOM_CENTER
+            })
+          } else {
+            setCstmrId(null);
+            setTokens([]);
+          }
+          
+        // } else if (localStorage.getItem("cstmrId") !== null) {
+        //   console.log("here")
+        //   loadingDirectus(true)
+        //   loadingCommerceJs(true)
+        //   dispatch(login({
+        //     email: localStorage.getItem("email"), 
+        //     token :localStorage.getItem("access_token"), 
+        //     refresh :localStorage.getItem("refresh_token"), 
+        //     cstmr_id : localStorage.getItem("cstmrId"), 
+        //     first_name : localStorage.getItem("first_name"), 
+        //     last_name : localStorage.getItem("last_name")
+        //   }));
         }
       }
-    }, [cstmrIdListener, cstmrId, tokens]);
+    }, [cstmrIdListener, tokenListener, cstmrId, tokens]);
     //////////////////////////////////////
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -103,25 +114,29 @@ export const SignIn = ({commerce}) => {
           })
         }
         setLoadingDirectus(false)
+        setPwd('');
       })
   }
   
   // récupération de l'id de l'utilisateur 
   const getCstmrs = async () => {
     await axios
-      .get(process.env.REACT_APP_COMMERCEJS_URL+'customers',{headers: 'X-Authorization: '+process.env.REACT_APP_COMMERCEJS_SECRET_KEY}, JSON.stringify({
-        "query": email
-      }))
+      .get(process.env.REACT_APP_COMMERCEJS_URL+'customers',{headers: 'X-Authorization: '+process.env.REACT_APP_COMMERCEJS_SECRET_KEY})
       .then((res) => {
-        setFirstName(res?.data.data[0]?.firstname);
-        setLastName(res?.data.data[0]?.lastname);
-        setCstmrId(res?.data.data[0]?.id);
+        res?.data?.data.find((user) => {
+          if (user?.email === email) {
+            setFirstName(user?.firstname);
+            setLastName(user?.lastname);
+            setCstmrId(user?.id);
+          }
+        })
       })
       .catch((err) => {
         toast.error('Echec de connexion aux serveurs CommerceJs.', {
           position: toast.POSITION.BOTTOM_CENTER
         })
         console.log(err)  
+        setPwd('');
         setLoadingCommerceJs(false)
       })
   }
