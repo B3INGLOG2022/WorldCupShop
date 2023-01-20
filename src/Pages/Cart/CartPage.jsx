@@ -18,15 +18,16 @@ export const CartPage = ({commerce}) => {
 
     const [items, setItems] = useState([])
     const [isLoading, setIsLoading] = useState(true)
+    const [isValidate, setIsValidate] = useState(false)
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const cartFinalPriceSelector  = useSelector((state) => {
-        return state.cart.cartPrice
+        return state?.cart?.cartPrice
     })
     
     const cartItemsListSelector  = useSelector((state) => {
-        return state.cart.listItems
+        return state?.cart?.listItems
     })
 
     //////////////////////////////////////
@@ -38,7 +39,7 @@ export const CartPage = ({commerce}) => {
         if (cstmrIdListener === null) {
             navigate("/sign-in")
         }
-    }, [])
+    }, [])    
     //////////////////////////////////////
     
     useEffect(() => {
@@ -58,7 +59,7 @@ export const CartPage = ({commerce}) => {
         await commerce.cart.retrieve()
         .then((cart) => {
             listItems = cart.line_items;
-            listItems.map((item) => dispatch(addItem({id: item.id, price :item?.price?.raw, stock: item.quantity, size: item.selected_options[0].option_name
+            listItems.map((item) => dispatch(addItem({id: item.id, name:item.name, img: item.image.url, price :item?.price?.raw, stock: item.quantity, size: item.selected_options[0].option_name
             })))
         });
         setIsLoading(false);
@@ -70,18 +71,18 @@ export const CartPage = ({commerce}) => {
     }, []);
 
     const sendEmail = () => { 
-        console.log(cartItemsListSelector.map(item => console.log("try",item.selected_options[0])))
         emailjs.send("react_contact_detail","cart_page_template",{
-            article: cartItemsListSelector.map(item => item.id),
+            article: cartItemsListSelector.map(item => item.name),
+            image_article: cartItemsListSelector.map(item => item.img),
             prix_article: cartItemsListSelector.map(item => item.price),
             quantite: cartItemsListSelector.map(item => item.stock),
-            //taille: cartItemsListSelector.map(item => item.selected_options[0].option_name),
+            taille: cartItemsListSelector.map(item => item.size),
             prix_total: cartFinalPriceSelector,
             },"Y3hWXStduBjejVOni" ) 
         .then(
                 (result) => { 
                     toast.success('Mail envoyé', {position: toast.POSITION.BOTTOM_CENTER}); 
-                    handleSendMail() 
+                    handleSendMail();
                 },
                 (error) => { 
                     navigate("/error");
@@ -90,16 +91,16 @@ export const CartPage = ({commerce}) => {
      };
 
     const handleSendMail = () => {
-        commerce.cart.delete();
+        commerce.cart.empty();
         navigate("/thanks");
     }
 
     const validateCart = () => {
+        setIsValidate(true);
         sendEmail();
-        handleSendMail() ;
     }
 
-    return isLoading ? (<Progress />) : (
+    return (isLoading || isValidate) ? (<Progress />) : (
         <>
             <NavBar commerce={commerce} />
 
@@ -111,7 +112,7 @@ export const CartPage = ({commerce}) => {
                 <div className="cart-total-price">
                     <p>Total : {cartFinalPriceSelector}€</p>
                 </div>
-                <Button className="cart-btn-buy" onClick={()=>{validateCart()}} disabled={(items.length > 0)?false:true} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#AD0505",color: "#FFFFFF"}}>Payer</Button>
+                <Button className="cart-btn-buy" onClick={() => {validateCart()}} disabled={(items.length > 0)?false:true} color="inherit" variant="contained" sx={{m:1, width: .5, backgroundColor: "#AD0505",color: "#FFFFFF"}}>Payer</Button>
             </StyledCart>
         </>
     )

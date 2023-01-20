@@ -12,7 +12,7 @@ export const cartSlice = createSlice(
         reducers: {
             addItem: (state, action) => {
                 if (!(state.listItems.find(item => item.id === action.payload.id))) {
-                    state.listItems.push({id:action.payload.id, price:action.payload.price, stock:action.payload.stock, size:action.payload.size})
+                    state.listItems.push({id:action.payload.id, name:action.payload.name, img: action.payload.img, price:action.payload.price, stock:action.payload.stock, size:action.payload.size})
                     let sum = 0;
                     state.listItems.map((item) => {
                         sum += Number((item.price*item.stock).toFixed(2));
