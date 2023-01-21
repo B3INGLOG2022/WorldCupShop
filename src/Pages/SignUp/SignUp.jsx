@@ -103,9 +103,9 @@ export const SignUp = (commerce) => {
                 dispatch(refresh_admin({
                     "adm_token" : res?.data?.data?.access_token
                   }));
-                toast.success('Token généré', {
-                    position: toast.POSITION.BOTTOM_CENTER
-                })
+                // toast.success('Token généré', {
+                //     position: toast.POSITION.BOTTOM_CENTER
+                // })
             }).catch((err) => {
                 navigate('/error')
             })
@@ -135,9 +135,9 @@ export const SignUp = (commerce) => {
             .catch((err) => {
                 console.log(err) 
                 if (err?.response?.data?.errors[0]?.message === 'Token expired.' || err?.response?.data?.errors[0]?.message === 'Invalid user credentials.') {
-                    toast.error('Token expiré', {
-                        position: toast.POSITION.BOTTOM_CENTER
-                    })
+                    // toast.error('Token expiré', {
+                    //     position: toast.POSITION.BOTTOM_CENTER
+                    // })
                     setWaitRefreshCreate(true);
                     refreshAdmToken();
                 } else if (err?.response?.data?.errors[0]?.message === 'Field "email" has to be unique.') {
@@ -173,9 +173,9 @@ export const SignUp = (commerce) => {
         })
         .catch((err) => {
             if (err?.response?.data?.errors[0]?.message === 'Token expired.'|| err?.response?.data?.errors[0]?.message === 'Invalid user credentials.')  {
-                toast.error('Token expiré', {
-                    position: toast.POSITION.BOTTOM_CENTER
-                })
+                // toast.error('Token expiré', {
+                //     position: toast.POSITION.BOTTOM_CENTER
+                // })
                 setWaitRefreshRemove(true)
                 dispatch(refresh_admin());
             } else {

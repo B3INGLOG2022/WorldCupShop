@@ -10,6 +10,7 @@ import { addItem } from "../../slices/cart_slice";
 import { useNavigate } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
 import {  toast } from 'react-toastify';
+import { RecapMailDiv } from '../../components/molecules/recapMailDiv/RecapMailDiv.jsx';
 
 
 
@@ -28,6 +29,10 @@ export const CartPage = ({commerce}) => {
     
     const cartItemsListSelector  = useSelector((state) => {
         return state?.cart?.listItems
+    })
+
+    const authListener  = useSelector((state) => {
+        return state?.auth
     })
 
     //////////////////////////////////////
@@ -73,21 +78,19 @@ export const CartPage = ({commerce}) => {
 
     const sendEmail = () => { 
         emailjs.send("react_contact_detail","cart_page_template",{
-            article: cartItemsListSelector.map(item => item.name),
-            image_article: cartItemsListSelector.map(item => item.img),
-            prix_article: cartItemsListSelector.map(item => item.price),
-            quantite: cartItemsListSelector.map(item => item.stock),
-            taille: cartItemsListSelector.map(item => item.size),
-            prix_total: cartFinalPriceSelector,
+            firstName : authListener.firstName,
+            lastName : authListener.lastName,
+            email : authListener.email,
+            mailRecap : <RecapMailDiv items={items} finalPrice={cartFinalPriceSelector}/>
             },"Y3hWXStduBjejVOni" ) 
         .then(
-                (result) => { 
-                    toast.success('Mail envoyé', {position: toast.POSITION.BOTTOM_CENTER}); 
-                    handleSendMail();
-                },
-                (error) => { 
-                    navigate("/error");
-                } 
+            (result) => { 
+                toast.success('Mail envoyé', {position: toast.POSITION.BOTTOM_CENTER}); 
+                handleSendMail();
+            },
+            (error) => { 
+                navigate("/error");
+            } 
         );
      };
 
