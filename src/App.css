@@ -36,3 +36,21 @@
     transform: rotate(360deg);
   }
 }
+
+a{
+  color: inherit;
+  text-decoration: inherit;
+}
+
+#container-root{
+  padding: 0;
+}
+
+header img{
+  width: auto;
+  height: 100px;
+  margin-top: 0px;
+  margin-left: 0px;
+  margin-bottom: 0px;
+  margin-right: 10px;
+}
