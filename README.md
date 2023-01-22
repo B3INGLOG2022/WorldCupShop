@@ -131,7 +131,9 @@ Ce Projet nous aura permis d'utiliser un certain nombre de packages / outils de 
 <div id='contact'/>
 <h2>  Contact </h2>
 
-[Corentin Mailler](https://www.linkedin.com/in/corentin-mailler/) - corentin.mailler@ynovcom
-[Matthieu Bouillot](https://www.linkedin.com/in/matthieu-bouillot/) - matthieu.bouillot@ynovcom
+[Corentin Mailler](https://www.linkedin.com/in/corentin-mailler/) - corentin.mailler@ynovcom <br>
+[Matthieu Bouillot](https://www.linkedin.com/in/matthieu-bouillot/) - matthieu.bouillot@ynovcom <br>
 
-Lien du projet: [https://github.com/B3INGLOG2022/WorldCupShop](https://github.com/B3INGLOG2022/WorldCupShop)
+Liens du projet: <br>
+[https://github.com/B3INGLOG2022/WorldCupShop](https://github.com/B3INGLOG2022/WorldCupShop) <br>
+[https://github.com/MAILLERC0/worldcupshop_back](https://github.com/MAILLERC0/worldcupshop_back) 
