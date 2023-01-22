@@ -69,7 +69,7 @@ _Une fois les prérequis respectés, vous pourrez commencer à suivre les étape
 
 1. Placez vous dans le repertoire de votre choix et faites un clone du repo :
    ```sh
-   git clone https://github.com/MAILLERC0/worldcupshop_back
+   git clone https://github.com/WorldCupShop/worldcupshop_back
    ```
 2. Ouvrez le repo qui a été cloné dans une invite de commande et installez les packages npm :
    ```sh
@@ -98,7 +98,7 @@ _Une fois les prérequis respectés, vous pourrez commencer à suivre les étape
 
 1. Placez vous dans le repertoire de votre choix et faites un clone du repo :
    ```sh
-   git clone https://github.com/B3INGLOG2022/WorldCupShop
+   git clone https://github.com/WorldCupShop/WorldCupShop_wpa
    ```
 2. Installez les packages npm :
    ```sh
@@ -135,5 +135,5 @@ Ce Projet nous aura permis d'utiliser un certain nombre de packages / outils de 
 [Matthieu Bouillot](https://www.linkedin.com/in/matthieu-bouillot/) - matthieu.bouillot@ynovcom <br>
 
 Liens du projet: <br>
-[https://github.com/B3INGLOG2022/WorldCupShop](https://github.com/B3INGLOG2022/WorldCupShop) <br>
-[https://github.com/MAILLERC0/worldcupshop_back](https://github.com/MAILLERC0/worldcupshop_back) 
+[https://github.com/WorldCupShop/WorldCupShop_wpa](https://github.com/WorldCupShop/WorldCupShop_wpa) <br>
+[https://github.com/WorldCupShop/worldcupshop_back](https://github.com/WorldCupShop/worldcupshop_back) 
