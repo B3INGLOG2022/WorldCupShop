@@ -24,6 +24,7 @@
     "react-directus": "^0.0.2",
     "react-dom": "^18.2.0",
     "react-dropdown": "^1.11.0",
+    "react-html-email": "^3.0.0",
     "react-html-parser": "^2.0.2",
     "react-icons": "^4.6.0",
     "react-placeholder-loading": "^0.5.30",

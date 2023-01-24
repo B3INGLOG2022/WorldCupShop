@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
 import {  toast } from 'react-toastify';
 import { RecapMailDiv } from '../../components/molecules/recapMailDiv/RecapMailDiv.jsx';
+import { renderEmail } from 'react-html-email'
 
 
 
@@ -76,12 +77,18 @@ export const CartPage = ({commerce}) => {
         fetchCart();
     }, []);
 
+    const emailHTML = renderEmail(
+        <RecapMailDiv items={items}    finalPrice={cartFinalPriceSelector}/>
+
+        
+      )
+
     const sendEmail = () => { 
         emailjs.send("react_contact_detail","cart_page_template",{
             firstName : authListener.firstName,
             lastName : authListener.lastName,
             email : authListener.email,
-            mailRecap : <RecapMailDiv items={items} finalPrice={cartFinalPriceSelector}/>
+            mailRecap : emailHTML
             },"Y3hWXStduBjejVOni" ) 
         .then(
             (result) => { 

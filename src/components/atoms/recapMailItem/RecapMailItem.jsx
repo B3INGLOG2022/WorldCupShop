@@ -1,11 +1,12 @@
-import {StyledRecapMailItem} from "./style.js";
+import {StyledCartItemProduct} from "../../molecules/cartItemProduct/style.js";
 import Card from '@mui/material/Card';
+
 
 export const RecapMailItem = ({item}) => {
 
 
   return (
-        <StyledRecapMailItem>
+    <StyledCartItemProduct>
             <Card className='cart-product-item-card' sx={{backgroundColor: "#F6F3F0"}}>
                 <div className='cart-product-item-img'>
                   <img src={item?.image?.url} alt="article" />
@@ -17,15 +18,16 @@ export const RecapMailItem = ({item}) => {
                 </div>
                 <div className='cart-product-item-center'>
                   <div className='cart-product-item-stock'>
-                    <p>{item.quantity}</p>
+                    {item.quantity}
                   </div>               
                   <div className="cart-list-product-price">
                     <p>{Number(item?.price?.raw*item.quantity).toFixed(2)} €</p>
                   </div>
                 </div>  
+               
                 
             </Card>
-        </StyledRecapMailItem>
+    </StyledCartItemProduct>
   )
 
 }

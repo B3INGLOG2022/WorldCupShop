@@ -9,4 +9,8 @@ export const StyledMailDiv = styled.div`
         margin-bottom:20px;
     }
 
+    .cart-total-price{
+        text-align: center;
+    }
+
 `
