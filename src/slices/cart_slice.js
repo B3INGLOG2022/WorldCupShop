@@ -15,8 +15,11 @@ export const cartSlice = createSlice(
                     state.listItems.push({id:action.payload.id, name:action.payload.name, img: action.payload.img, price:action.payload.price, stock:action.payload.stock, size:action.payload.size})
                     let sum = 0;
                     state.listItems.map((item) => {
+                        console.log(item.price)
+                        console.log(item.stock)
                         sum += Number((item.price*item.stock).toFixed(2));
                     })
+                    console.log(sum.toFixed(2))
                     state.cartPrice = Number(sum.toFixed(2));
                 }
                 return state;   

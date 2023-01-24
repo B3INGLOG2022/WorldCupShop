@@ -61,19 +61,6 @@ export const SignIn = ({commerce}) => {
             setCstmrId(null);
             setTokens([]);
           }
-          
-        // } else if (localStorage.getItem("cstmrId") !== null) {
-        //   console.log("here")
-        //   loadingDirectus(true)
-        //   loadingCommerceJs(true)
-        //   dispatch(login({
-        //     email: localStorage.getItem("email"), 
-        //     token :localStorage.getItem("access_token"), 
-        //     refresh :localStorage.getItem("refresh_token"), 
-        //     cstmr_id : localStorage.getItem("cstmrId"), 
-        //     first_name : localStorage.getItem("first_name"), 
-        //     last_name : localStorage.getItem("last_name")
-        //   }));
         }
       }
     }, [cstmrIdListener, tokenListener, cstmrId, tokens]);
@@ -135,7 +122,6 @@ export const SignIn = ({commerce}) => {
         toast.error('Echec de connexion aux serveurs CommerceJs.', {
           position: toast.POSITION.BOTTOM_CENTER
         })
-        console.log(err)  
         setPwd('');
         setLoadingCommerceJs(false)
       })

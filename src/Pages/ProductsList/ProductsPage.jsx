@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ScrollUp } from '../../components/atoms/ScrollUp/ScrollUp.jsx';
 import { useSelector } from 'react-redux';
+import { toast, ToastContainer } from 'react-toastify';
 
 
 export const ProductsPage = ({commerce}) => { 
@@ -72,8 +73,7 @@ export const ProductsPage = ({commerce}) => {
                 setIsLoading(false);
             })
             .catch((err) => {
-                // navigate('/error');
-                console.log(err)
+                navigate('/error');
             })
     }
 
@@ -174,12 +174,22 @@ export const ProductsPage = ({commerce}) => {
                             </FormControl>
                         </div>
                         <div className='products-list-header-filtre'>
-                            <p>Filtres :</p>
+                            <p>Marques :</p>
                             <Select
                                 defaultValue={dataBrandFormated}
                                 isMulti
                                 name="colors"
-                                onChange={(newBrands)=>setDataBrandFormated(newBrands)}
+                                onChange={
+                                    (newBrands)=> {
+                                        if (newBrands.length > 0) {
+                                            setDataBrandFormated(newBrands)
+                                        } else {
+                                            toast.error('Au moins une marque doit être selectionnée', {
+                                                position: toast.POSITION.BOTTOM_CENTER
+                                            })
+                                        }
+                                    }
+                                }
                                 options={optionsBrandFormated}
                                 className="basic-multi-select"
                                 classNamePrefix="select"
@@ -200,6 +210,7 @@ export const ProductsPage = ({commerce}) => {
                 </div>
             </StyledProductsList>
             <Footer />
+            <ToastContainer />
             <ScrollUp scrollStepInPx={15} delayInMs={5}/>
         </>
     )
