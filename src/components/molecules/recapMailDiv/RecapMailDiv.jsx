@@ -6,12 +6,11 @@ export const RecapMailDiv = ({items, finalPrice}) => {
     return (
         <>
             <StyledMailDiv>
-                <h2>Récapitulatif de mon panier</h2>
                 {items.map(item => {
                     return (<RecapMailItem key={item.id} item={item}/>)
                 })}
                 <div className="cart-total-price">
-                    <p>Total : {finalPrice}€</p>
+                    <p>Prix Total : {finalPrice}€</p>
                 </div>
             </StyledMailDiv>
         </>
