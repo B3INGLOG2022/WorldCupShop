@@ -12,6 +12,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { refresh } from "../../../slices/auth_slice.js";
+import { navigate } from "@storybook/addon-links";
 
 export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, currentUserComment}) => {
 
@@ -48,7 +49,6 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
 
     useEffect(() => {
         if (neadRefresh){
-            console.log("here")
             setNeadRefresh(false);
             sendNotices();
         }
@@ -56,7 +56,6 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
     
 
     const refreshCurrentToken = async () => {
-        console.log("refreshSelector ", refreshSelector)
         await axios
             .post(process.env.REACT_APP_DIRECTUS_URL+'auth/refresh',
                 JSON.stringify({
@@ -67,14 +66,13 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
                     "Content-Type": "application/json"
                 }}
             ).then((res) => {
-                console.log(res)
                 dispatch(refresh({
                     "token" : res?.data?.data?.access_token,
                     "refresh" : res?.data?.data?.refresh_token
                   }));
             })
             .catch((err) => {
-                console.log(err);
+                navigate('/error')
             })
     }
 
@@ -107,7 +105,6 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
                     toast.error('Echec de l\'envoie de votre avis !', {
                         position: toast.POSITION.BOTTOM_CENTER
                     })
-                    console.log(err)
                 })
         } else {
             await axios
@@ -136,7 +133,6 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
                     toast.error('Echec de l\'envoie de votre avis !', {
                         position: toast.POSITION.BOTTOM_CENTER
                     })
-                    console.log(err)
                 })
         }
     }

@@ -5,16 +5,15 @@
     <img src="features/WORLDCUPSHOP_logo.png" alt="Logo">
   </a>
 
-  <h3 align="center">WORLDCUPSHOP</h3>
+  <h1 align="center">WORLDCUPSHOP</h1>
 
   <p align="center">
-    Bienvenue sur notre projet de e-commerce WorldCupSop.
+    Bienvenue sur notre projet de e-commerce WorldCupSop, une WPA de vente de maillot de la coupe du monde en ligne.
     <br />
     <a href="">View Demo</a>
   </p>
 </div>
 
-<!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
   <ol>
@@ -22,10 +21,10 @@
       <a href="#getting-started">Bien débuter le projet</a>
       <ul>
         <li><a href="#prerequisites">Prérequis</a></li>
-        <li><a href="#installation">Installation</a>
+        <li><a href="#installation">Installations</a>
          <ul>
-            <li><a href="#back">Back-end</a></li>
-            <li><a href="#front">Front-end</a></li>
+            <li><a href="#back">Back</a></li>
+            <li><a href="#front">Front</a></li>
         </ul>
         </li>
       </ul>
@@ -35,14 +34,13 @@
   </ol>
 </details>
 
-<!-- GETTING STARTED -->
 <div id='getting-started'/>
-## Bien débuter le projet
+<h2> Bien débuter le projet </h2>
 
 Dans le but de pouvoir pleinement profiter de la démo de notre WPA, une liste de prérequis seront à respecter.
 
 <div id='prerequisites'/>
-### Prérequis
+<h3> Prérequis </h3>
 
 Dans un premier temps il faudra vous assurer que vous ayez sur votre poste :
 
@@ -62,16 +60,16 @@ Dans un premier temps il faudra vous assurer que vous ayez sur votre poste :
   ```
 
 <div id='installation'/>
-### Installation
+<h3> Installations </h3>
 
 _Une fois les prérequis respectés, vous pourrez commencer à suivre les étapes d'installations du projet ci-dessous._
 
 <div id='back'/>
-#### Back
+<h4> Back </h4>
 
 1. Placez vous dans le repertoire de votre choix et faites un clone du repo :
    ```sh
-   git clone https://github.com/MAILLERC0/worldcupshop_back
+   git clone https://github.com/WorldCupShop/worldcupshop_back
    ```
 2. Ouvrez le repo qui a été cloné dans une invite de commande et installez les packages npm :
    ```sh
@@ -96,10 +94,11 @@ _Une fois les prérequis respectés, vous pourrez commencer à suivre les étape
    ```
 
 <div id='front'/>
-#### Front
-1. Placez vous dans le repertoire de votre choix et faites un clone des repos :
+<h4> Front </h4>
+
+1. Placez vous dans le repertoire de votre choix et faites un clone du repo :
    ```sh
-   git clone https://github.com/B3INGLOG2022/WorldCupShop
+   git clone https://github.com/WorldCupShop/WorldCupShop_wpa
    ```
 2. Installez les packages npm :
    ```sh
@@ -113,26 +112,28 @@ _Une fois les prérequis respectés, vous pourrez commencer à suivre les étape
    ```
    http://localhost:3000/
    ```
-<!-- CONTACT -->
-<div id='tools'/>
-## Outils & Pachages utilisés
 
-Ce Projet nous aura permis d'utiliser un certain nombre de packages / outils de developpement avec notamment :
-    - reactjs 💻
-    - directus 💻
-    - commercejs 💻
-    - emailjs 📖
-    - mui 📖
-    - react-router-dom 📦
-    - toastify 📦
-    - react-cookie 📦
-    - axios 📦
-    - reduxjs 📦
+<div id='tools'/>
+<h2>  Outils & Pachages utilisés </h2>
+
+Ce Projet nous aura permis d'utiliser un certain nombre de packages / outils de developpement avec notamment : <br>
+    - reactjs 💻 <br>
+    - directus 💻 <br>
+    - commercejs 💻 <br>
+    - emailjs 📖 <br>
+    - mui 📖 <br>
+    - react-router-dom 📦 <br>
+    - toastify 📦 <br>
+    - axios 📦 <br>
+    - reduxjs 📦 <br>
+
 
 <div id='contact'/>
-## Contact
+<h2>  Contact </h2>
 
-[Corentin Mailler](https://www.linkedin.com/in/corentin-mailler/) - corentin.mailler@ynovcom
-[Matthieu Bouillot](https://www.linkedin.com/in/matthieu-bouillot/) - matthieu.bouillot@ynovcom
+[Corentin Mailler](https://www.linkedin.com/in/corentin-mailler/) - corentin.mailler@ynovcom <br>
+[Matthieu Bouillot](https://www.linkedin.com/in/matthieu-bouillot/) - matthieu.bouillot@ynovcom <br>
 
-Lien du projet: [https://github.com/B3INGLOG2022/WorldCupShop](https://github.com/B3INGLOG2022/WorldCupShop)
+Liens du projet: <br>
+[https://github.com/WorldCupShop/WorldCupShop_wpa](https://github.com/WorldCupShop/WorldCupShop_wpa) <br>
+[https://github.com/WorldCupShop/worldcupshop_back](https://github.com/WorldCupShop/worldcupshop_back) 

@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 export const SearchBar = ({options, setSearchBarValue}) => {
 
-    const [searchValue, setSearchValue] = useState()
+    const [searchValue, setSearchValue] = useState('')
 
     return (
 
