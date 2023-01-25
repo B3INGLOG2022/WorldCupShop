@@ -16,24 +16,27 @@ export const Notice = ({globalRate, noticesList, ourNotice}) => {
     const [users, setUsers] = useState([]);
     const navigate = useNavigate();
 
+    // tri par date des avis --
     const sortByTime = () => {
         noticesList.sort((a, b) => {
             if (b.date_updated !== null && a.date_updated !== null){
-                b.date_updated.localeCompare(a.date_updated)
+                return b.date_updated.localeCompare(a.date_updated);
             } else if (b.date_updated !== null && a.date_updated === null){
-                b.date_updated.localeCompare(a.date_created)
+                return b.date_updated.localeCompare(a.date_created);
             } else if (b.date_updated === null && a.date_updated !== null){
-                b.date_created.localeCompare(a.date_updated)
+                return b.date_created.localeCompare(a.date_updated);
             } else {
-                b.date_created.localeCompare(a.date_created)
+                return b.date_created.localeCompare(a.date_created);
             }
         })
     }
-    
+
+    // tri par note des avis
     const sortByRate = () => {
         noticesList.sort((a, b) => b.note - a.note);
     }
 
+    // gestion des tris
     const handleChangeSort = (event) => {
         setSort(event.target.value);
         if (event.target.value === 1){
@@ -43,6 +46,7 @@ export const Notice = ({globalRate, noticesList, ourNotice}) => {
         }
     };
 
+    // récupération des données des auteurs des avis
     const fetchUsers = async () => {
         let usersList = [];
         await noticesList?.map((notice) => {

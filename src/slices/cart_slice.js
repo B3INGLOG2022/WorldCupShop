@@ -11,6 +11,7 @@ export const cartSlice = createSlice(
         initialState:initialCart,
         reducers: {
             addItem: (state, action) => {
+                // on évite les doublons grâce a cette condition
                 if (!(state.listItems.find(item => item.id === action.payload.id))) {
                     state.listItems.push({id:action.payload.id, name:action.payload.name, img: action.payload.img, price:action.payload.price, stock:action.payload.stock, size:action.payload.size})
                     let sum = 0;

@@ -23,7 +23,9 @@ import { Notice } from "../../components/molecules/notice/Notice.jsx";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom';
 import { Progress } from "../../components/atoms/Progress/Progress.jsx";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../slices/auth_slice.js";
+import { emptyCart } from "../../slices/cart_slice.js";
 
 export const DetailsProductPage = ({commerce}) => { 
 
@@ -32,25 +34,32 @@ export const DetailsProductPage = ({commerce}) => {
     const [stock, setStock] = useState(1)
     const [product, setProduct] = useState({})
     const [isLoading, setIsLoading] = useState(true);
+    const [isAdding, setIsAdding] = useState(false);
     const [globalRate, setGlobalRate] = useState('');
     const [notices, setNotices] = useState(null);
     const [ourNotice, setOurNotices] = useState({});
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const params = useParams();
     
     //////////////////////////////////////
+    //si l'id de l'utilisateur n'est pas connue --> retourner à l'étape d'authentification
     const cstmrIdListener  = useSelector((state) => {
         return state?.auth?.cstmrId
     })
 
     useEffect(() => {
         if (cstmrIdListener === null) {
-            navigate("/sign-in")
+            dispatch(logout());
+            dispatch(emptyCart());
+            commerce.cart.empty();
+            navigate("/sign-in");
         }
     }, [])
     //////////////////////////////////////
 
+    // récupération des avis
     const fetchNotices = async () => {
         await axios
             .get(process.env.REACT_APP_DIRECTUS_URL+'items/notice')
@@ -62,6 +71,7 @@ export const DetailsProductPage = ({commerce}) => {
             })
     }
 
+    // récupération des détails du produit
     const fetchProduct = () => {
         commerce.products.retrieve(params?.id).then((product) => {
             setProduct(product);
@@ -72,20 +82,40 @@ export const DetailsProductPage = ({commerce}) => {
         });
     }
 
+    // récupération des données du panier pour respecter les limitations
     const postCart = async() => {
-        let anon = {}
-        anon[variantId] = size;
+        let item = {};
+        let alreadyExistStock = 0;
+        item[variantId] = size;
         toast.info('Ajout du produit au panier ...', {
             position: toast.POSITION.BOTTOM_CENTER
         })
-        await commerce.cart.add(params?.id, stock, anon).then((res) => {
-            toast.success('Produit ajouté au panier', {
+        await commerce.cart.retrieve()
+        .then((cart) => {
+            alreadyExistStock = (cart.line_items.find(item => (item.product_id === product.id) && (item?.selected_options[0]?.option_id === size)))?.quantity || 0
+        });
+        if (alreadyExistStock < 10) {
+            let requestStock = ((alreadyExistStock+stock)>10)? (10 - alreadyExistStock) : stock
+            await commerce.cart.add(params?.id, requestStock, item)
+            .finally(() => {
+                toast.success('Produit ajouté au panier', {
+                    position: toast.POSITION.BOTTOM_CENTER
+                })
+                setIsAdding(false);
+            })
+            .catch(() => {
+                navigate('/error');
+            });
+        } else {
+            toast.error('Limite de réservation atteinte pour la taille de ce produit', {
                 position: toast.POSITION.BOTTOM_CENTER
             })
-        });
+            setIsAdding(false);
+        }
 
     }
 
+    // au chargement de la page --> récupération des détails du produit
     useEffect(() => {
         fetchProduct();
     }, []);
@@ -105,6 +135,7 @@ export const DetailsProductPage = ({commerce}) => {
         return (addrate/data.length).toFixed(1);
     }
 
+    // récupération des avis en fonction de leur ID
     const getNoticesById = (cNotices) => {
         let noticesCatched = [];
         let ourNoticeCatched = {};
@@ -145,6 +176,7 @@ export const DetailsProductPage = ({commerce}) => {
                         <FormControl sx={{ m: 1, minWidth: 80 }}>
                             <InputLabel>Taille</InputLabel>
                             <Select
+                                disabled={isAdding?true:false}
                                 value={size}
                                 onChange={handleChangeSize}
                                 autoWidth
@@ -162,6 +194,7 @@ export const DetailsProductPage = ({commerce}) => {
                             <InputLabel>Stock</InputLabel>
                             <Select
                                 value={stock}
+                                disabled={isAdding?true:false}
                                 onChange={handleChangeStock}
                                 autoWidth
                                 label="Size"
@@ -185,7 +218,7 @@ export const DetailsProductPage = ({commerce}) => {
                         </Typography>
                     </div>
                 </div>
-                <Button id="Product-add-cart-btn" color="inherit" onClick={() => {postCart()}} disabled={(size) ? false : true} variant="contained" sx={{m:1, width: .3, backgroundColor: "#FFFFFF",color: "#AD0505"}}>
+                <Button id="Product-add-cart-btn" color="inherit" onClick={() => {setIsAdding(true); postCart()}} disabled={(size && !isAdding) ? false : true} variant="contained" sx={{m:1, width: .3, backgroundColor: "#FFFFFF",color: "#AD0505"}}>
                     <Typography>
                         Ajouter au panier
                     </Typography>

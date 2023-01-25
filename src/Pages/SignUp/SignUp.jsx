@@ -103,9 +103,9 @@ export const SignUp = (commerce) => {
                 dispatch(refresh_admin({
                     "adm_token" : res?.data?.data?.access_token
                   }));
-                toast.success('Token généré', {
-                    position: toast.POSITION.BOTTOM_CENTER
-                })
+                // toast.success('Token généré', {
+                //     position: toast.POSITION.BOTTOM_CENTER
+                // })
             }).catch((err) => {
                 navigate('/error')
             })
@@ -128,16 +128,11 @@ export const SignUp = (commerce) => {
                     "Content-Type": "application/json"
                 }})
             .then((res) => {
-                console.log("create directus ok")
                 setUserId(res?.data?.data?.id)
                 setCreationSuccessDirectus(true);
             })
             .catch((err) => {
-                console.log(err) 
                 if (err?.response?.data?.errors[0]?.message === 'Token expired.' || err?.response?.data?.errors[0]?.message === 'Invalid user credentials.') {
-                    toast.error('Token expiré', {
-                        position: toast.POSITION.BOTTOM_CENTER
-                    })
                     setWaitRefreshCreate(true);
                     refreshAdmToken();
                 } else if (err?.response?.data?.errors[0]?.message === 'Field "email" has to be unique.') {
@@ -167,15 +162,14 @@ export const SignUp = (commerce) => {
                 "Content-Type": "application/json"
             }})
         .then(() => {
-            console.log("remove directus ok")
             setCreationSuccessDirectus(false);
             setLoadingDirectus(false)
         })
         .catch((err) => {
             if (err?.response?.data?.errors[0]?.message === 'Token expired.'|| err?.response?.data?.errors[0]?.message === 'Invalid user credentials.')  {
-                toast.error('Token expiré', {
-                    position: toast.POSITION.BOTTOM_CENTER
-                })
+                // toast.error('Token expiré', {
+                //     position: toast.POSITION.BOTTOM_CENTER
+                // })
                 setWaitRefreshRemove(true)
                 dispatch(refresh_admin());
             } else {
@@ -204,13 +198,9 @@ export const SignUp = (commerce) => {
                     "Content-Type": "application/json"
                 }})
             .then(() => {
-                console.log("create cjs ok")
-
                 setCreationSuccessCJS(true);
             })
             .catch((err) => {
-                console.log(err) 
-
                 toast.error('Echec de connexion au serveur CommerceJs.', {
                     position: toast.POSITION.BOTTOM_CENTER
                 })
@@ -224,12 +214,10 @@ export const SignUp = (commerce) => {
         await axios
             .delete(process.env.REACT_APP_COMMERCEJS_URL+'customers/'+cstmrId,{headers: 'X-Authorization: '+process.env.REACT_APP_COMMERCEJS_SECRET_KEY})
             .then(() => {
-                console.log("remove cjs ok")
                 setCreationSuccessCJS(false);
                 setLoadingCommerceJs(false)
             })
             .catch((err) => {
-                console.log(err)
                 toast.error('Echec de connexion au serveur CommerceJs.', {
                     position: toast.POSITION.BOTTOM_CENTER
                 })
@@ -251,14 +239,12 @@ export const SignUp = (commerce) => {
                 "Content-Type": "application/json"
             }})
         .then((res) => {
-            console.log("connect directus ok")
             setTokens([res?.data?.data?.access_token, res?.data?.data?.refresh_token]);
         })
         .catch((err) => {
             toast.error('Echec de connexion au serveur Directus.', {
                 position: toast.POSITION.BOTTOM_CENTER
             })
-            console.log(err) 
             setLoadingDirectus(false)
         })
     }
@@ -284,7 +270,6 @@ export const SignUp = (commerce) => {
                         position: toast.POSITION.BOTTOM_CENTER
                     })
                 }
-                console.log(err)  
                 setLoadingCommerceJs(false)
                 
         })

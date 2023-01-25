@@ -17,7 +17,6 @@ export const authSlice = createSlice(
         initialState:  initialAuth,
         reducers: {
             login: (state, action) => {
-                console.log("login ok")
                 state.lastName = action.payload.last_name;
                 state.firstName = action.payload.first_name;
                 state.email = action.payload.email;
@@ -33,7 +32,6 @@ export const authSlice = createSlice(
                 return state;   
             },
             logout: (state, action) => {
-                console.log("logout ok")
                 state.lastName = null;
                 state.firstName = null;
                 state.email = null;
@@ -49,7 +47,6 @@ export const authSlice = createSlice(
                 return state;   
             },
             refresh: (state, action) => {
-                console.log("refresh ok")
                 state.token = action.payload.token;
                 state.refreshToken = action.payload.refresh;
                 localStorage.setItem("access_token", action.payload.token);
@@ -57,7 +54,6 @@ export const authSlice = createSlice(
                 return state;
             },
             refresh_admin: (state, action) => {
-                console.log("refresh ok")
                 state.admToken = action.payload.adm_token;
                 localStorage.setItem("adm_token", action.payload.adm_token);
                 return state;
