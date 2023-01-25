@@ -55,6 +55,7 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
     }, [tokenSelector]);
     
 
+    // regénération du token de notre utilisateur courant
     const refreshCurrentToken = async () => {
         await axios
             .post(process.env.REACT_APP_DIRECTUS_URL+'auth/refresh',
@@ -76,7 +77,10 @@ export const InputNotice = ({idNotice, currentUserValue, currentUserTitle, curre
             })
     }
 
+    // envoie du nouvel avis de l'utilisateur courant
     const sendNotices = async() => {
+        // si l'avis était déjà existant --> le modifier
+        // sinon --> le créer
         if (idNotice){
             await axios
                 .patch(process.env.REACT_APP_DIRECTUS_URL+'items/notice/'+idNotice,

@@ -23,8 +23,9 @@ import { Notice } from "../../components/molecules/notice/Notice.jsx";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom';
 import { Progress } from "../../components/atoms/Progress/Progress.jsx";
-import { useSelector } from "react-redux";
-import { addItem } from "../../slices/cart_slice.js";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../slices/auth_slice.js";
+import { emptyCart } from "../../slices/cart_slice.js";
 
 export const DetailsProductPage = ({commerce}) => { 
 
@@ -39,20 +40,26 @@ export const DetailsProductPage = ({commerce}) => {
     const [ourNotice, setOurNotices] = useState({});
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const params = useParams();
     
     //////////////////////////////////////
+    //si l'id de l'utilisateur n'est pas connue --> retourner à l'étape d'authentification
     const cstmrIdListener  = useSelector((state) => {
         return state?.auth?.cstmrId
     })
 
     useEffect(() => {
         if (cstmrIdListener === null) {
-            navigate("/sign-in")
+            dispatch(logout());
+            dispatch(emptyCart());
+            commerce.cart.empty();
+            navigate("/sign-in");
         }
     }, [])
     //////////////////////////////////////
 
+    // récupération des avis
     const fetchNotices = async () => {
         await axios
             .get(process.env.REACT_APP_DIRECTUS_URL+'items/notice')
@@ -64,6 +71,7 @@ export const DetailsProductPage = ({commerce}) => {
             })
     }
 
+    // récupération des détails du produit
     const fetchProduct = () => {
         commerce.products.retrieve(params?.id).then((product) => {
             setProduct(product);
@@ -74,6 +82,7 @@ export const DetailsProductPage = ({commerce}) => {
         });
     }
 
+    // récupération des données du panier pour respecter les limitations
     const postCart = async() => {
         let item = {};
         let alreadyExistStock = 0;
@@ -98,17 +107,15 @@ export const DetailsProductPage = ({commerce}) => {
                 navigate('/error');
             });
         } else {
-            toast.error('Maximum de produits déjà réservé pour cette taille', {
+            toast.error('Limite de réservation atteinte pour la taille de ce produit', {
                 position: toast.POSITION.BOTTOM_CENTER
             })
             setIsAdding(false);
         }
-        
-        
-        
 
     }
 
+    // au chargement de la page --> récupération des détails du produit
     useEffect(() => {
         fetchProduct();
     }, []);
@@ -128,6 +135,7 @@ export const DetailsProductPage = ({commerce}) => {
         return (addrate/data.length).toFixed(1);
     }
 
+    // récupération des avis en fonction de leur ID
     const getNoticesById = (cNotices) => {
         let noticesCatched = [];
         let ourNoticeCatched = {};

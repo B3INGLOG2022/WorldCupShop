@@ -10,8 +10,10 @@ import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ScrollUp } from '../../components/atoms/ScrollUp/ScrollUp.jsx';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { toast, ToastContainer } from 'react-toastify';
+import { logout } from '../../slices/auth_slice.js';
+import { emptyCart } from '../../slices/cart_slice.js';
 
 
 export const ProductsPage = ({commerce}) => { 
@@ -25,17 +27,20 @@ export const ProductsPage = ({commerce}) => {
     const [notices, setNotices] = useState(null);
     const [sort, setSort] = useState(0) 
     const navigate = useNavigate();
-
+    const dispatch = useDispatch();
+    
     //////////////////////////////////////
+    //si l'id de l'utilisateur n'est pas connue --> retourner à l'étape d'authentification
     const cstmrIdListener  = useSelector((state) => {
         return state?.auth?.cstmrId
     })
 
     useEffect(() => {
         if (cstmrIdListener === null) {
-            navigate("/sign-in")
-        } else {
-            fetchCategories();
+            dispatch(logout());
+            dispatch(emptyCart());
+            commerce.cart.empty();
+            navigate("/sign-in");
         }
     }, [])
     //////////////////////////////////////
@@ -53,6 +58,7 @@ export const ProductsPage = ({commerce}) => {
         productsFilters.sort((a, b) => a.name.localeCompare(b.name));
     }
     
+    // traitement du tri
     const handleChangeSort = (event) => {
         setSort(event.target.value);
         if (event.target.value === 1){
@@ -64,7 +70,7 @@ export const ProductsPage = ({commerce}) => {
         }
     };  
 
-    // fetch functions
+    // récupération des avis
     const fetchNotices = async () => {
         await axios
             .get(process.env.REACT_APP_DIRECTUS_URL+'items/notice')
@@ -77,6 +83,7 @@ export const ProductsPage = ({commerce}) => {
             })
     }
 
+    // récupération des produits
     const fetchProducts = async() => {
         await commerce.products.list().then((products) => {
             setProducts(products.data);
@@ -87,6 +94,7 @@ export const ProductsPage = ({commerce}) => {
         });
     }
 
+    // récupération des marques disponibles
     const fetchCategories = async () => {
         var allBrandsFormated = [];
         var allBrands = [];
@@ -104,6 +112,7 @@ export const ProductsPage = ({commerce}) => {
         });
     }
 
+    // lorsque la valeur de la barre de recherche et/ou des filtres change --> modifier l'affichage des produits
     useEffect(() => {
         if (!isLoading){
             let SearchProductsList = [];
@@ -129,13 +138,14 @@ export const ProductsPage = ({commerce}) => {
         }
     },[dataBrandFormated, searchBarValue])
 
-
+    // calcul de la note globale de chaque article
     const CalculateGlobalRate = (data) => {
         var addrate = 0;
         data.map((notice) => addrate += notice.note)
         return (addrate/data.length).toFixed(1);
     }
 
+    // récupération du nombre d'avis et de la note de chaque article grâce à leur ID
     const getNoticesById = (id_product) => {
         let nbNotice = 0;
         let noticesCatched = [];
