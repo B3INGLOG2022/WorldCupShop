@@ -6,12 +6,13 @@ import { Button } from '@mui/material';
 import { useEffect } from 'react';
 import { Progress } from '../../components/atoms/Progress/Progress.jsx';
 import { useSelector, useDispatch} from 'react-redux'
-import { addItem } from "../../slices/cart_slice";
+import { addItem, emptyCart } from "../../slices/cart_slice";
 import { useNavigate } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
 import {  toast } from 'react-toastify';
 import { RecapMailDiv } from '../../components/molecules/recapMailDiv/RecapMailDiv.jsx';
 import { renderEmail } from 'react-html-email'
+import { logout } from '../../slices/auth_slice.js';
 
 
 
@@ -21,8 +22,24 @@ export const CartPage = ({commerce}) => {
     const [items, setItems] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [isValidate, setIsValidate] = useState(false)
-    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    
+    //////////////////////////////////////
+    //si l'id de l'utilisateur n'est pas connue --> retourner à l'étape d'authentification
+    const cstmrIdListener  = useSelector((state) => {
+        return state?.auth?.cstmrId
+    })
+
+    useEffect(() => {
+        if (cstmrIdListener === null) {
+            dispatch(logout());
+            dispatch(emptyCart());
+            commerce.cart.empty();
+            navigate("/sign-in");
+        }
+    }, [])
+    //////////////////////////////////////
 
     const cartFinalPriceSelector  = useSelector((state) => {
         return state?.cart?.cartPrice
@@ -35,19 +52,8 @@ export const CartPage = ({commerce}) => {
     const authListener  = useSelector((state) => {
         return state?.auth
     })
-
-    //////////////////////////////////////
-    const cstmrIdListener  = useSelector((state) => {
-        return state?.auth?.cstmrId
-    })
-
-    useEffect(() => {
-        if (cstmrIdListener === null) {
-            navigate("/sign-in")
-        }
-    }, [])    
-    //////////////////////////////////////
     
+    // lorsque la listeItems de notre reducer est modifiée --> changer l'affichage actuel également
     useEffect(() => {
         if (items.length > 0) {
             let newListItems = [];
@@ -60,6 +66,7 @@ export const CartPage = ({commerce}) => {
         }
     }, [cartItemsListSelector])
 
+    // récupération des données du panier
     const fetchCart = async () => {
         let listItems
         await commerce.cart.retrieve()
@@ -76,12 +83,12 @@ export const CartPage = ({commerce}) => {
         fetchCart();
     }, []);
 
+    // formatage du contenue de notre mail
     const emailHTML = renderEmail(
         <RecapMailDiv items={items}    finalPrice={cartFinalPriceSelector}/>
-
-        
       )
 
+    // envoie du mail récapitulatif de la commande
     const sendEmail = () => { 
         emailjs.send("react_contact_detail","cart_page_template",{
             firstName : authListener.firstName,
@@ -102,6 +109,7 @@ export const CartPage = ({commerce}) => {
 
     const handleSendMail = () => {
         commerce.cart.empty();
+        dispatch(emptyCart());
         navigate("/thanks");
     }
 
