@@ -41,6 +41,8 @@ export const ProductsPage = ({commerce}) => {
             dispatch(emptyCart());
             commerce.cart.empty();
             navigate("/sign-in");
+        } else {
+            fetchCategories();
         }
     }, [])
     //////////////////////////////////////
