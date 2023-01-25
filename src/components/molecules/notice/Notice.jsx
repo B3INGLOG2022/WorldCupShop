@@ -20,11 +20,11 @@ export const Notice = ({globalRate, noticesList, ourNotice}) => {
     const sortByTime = () => {
         noticesList.sort((a, b) => {
             if (b.date_updated !== null && a.date_updated !== null){
-                return b.date_created.localeCompare(a.date_created);
+                return b.date_updated.localeCompare(a.date_updated);
             } else if (b.date_updated !== null && a.date_updated === null){
-                return b.date_created.localeCompare(a.date_created);
-            } else if (b.date_updated == null && a.date_updated !== null){
-                return b.date_created.localeCompare(a.date_created);
+                return b.date_updated.localeCompare(a.date_created);
+            } else if (b.date_updated === null && a.date_updated !== null){
+                return b.date_created.localeCompare(a.date_updated);
             } else {
                 return b.date_created.localeCompare(a.date_created);
             }
