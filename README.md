@@ -75,7 +75,7 @@ _Une fois les prérequis respectés, vous pourrez commencer à suivre les étape
    ```sh
    npm install
    ```
-3. Démarrez le logiciel XAMMPP et démarrez les modules Apache & MySQL
+3. Démarrez le logiciel XAMPP et démarrez les modules Apache & MySQL
 4. Administrez votre serveur phpMyAdmin en sélectionnant le bouton admin du module MySQL
 5. Créez vous une nouvelle base de données "directus"
 6. Allez dans l'onglet Importer et selectionnez le fichier directus.SQL présent dans le repertoire bdd du repo cloné précedement.
@@ -89,7 +89,7 @@ _Une fois les prérequis respectés, vous pourrez commencer à suivre les étape
    ```
 9. Connectez vous avec les credentials :
     ```
-    login : "admin@exxample.com"
+    login : "admin@example.com"
     password : "password"
    ```
 
